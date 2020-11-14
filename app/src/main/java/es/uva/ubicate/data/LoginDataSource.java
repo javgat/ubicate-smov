@@ -14,11 +14,16 @@ public class LoginDataSource {
         try {
             // TODO: handle loggedInUser authentication
             // AUTENTIFICACION SE HACE AQUI
-            LoggedInUser fakeUser =
-                    new LoggedInUser(
-                            java.util.UUID.randomUUID().toString(),
-                            "Jane Doe");
-            return new Result.Success<>(fakeUser);
+            // Pongo esto para poder observar que pasa cuando no funciona
+            if(username.equals("admin")) {
+                LoggedInUser fakeUser =
+                        new LoggedInUser(
+                                java.util.UUID.randomUUID().toString(),
+                                "Jane Doe");
+                return new Result.Success<>(fakeUser);
+            }else{
+                return new Result.Error(new IllegalArgumentException("Error de username"));
+            }
         } catch (Exception e) {
             return new Result.Error(new IOException("Error logging in", e));
         }
