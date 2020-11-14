@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "924987019206",
+    "firebase_url": "https://ubicate-smov.firebaseio.com",
+    "project_id": "ubicate-smov",
+    "storage_bucket": "ubicate-smov.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:924987019206:android:b5f626efefb2a75df26cc7",
+        "android_client_info": {
+          "package_name": "es.uva.ubicate"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "924987019206-llhpsij4jnva8mh9gd3ls6hlgm5apqlm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDvb4CgyP0nVy8pN0dkzF3vbjWbaxDbm28"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "924987019206-llhpsij4jnva8mh9gd3ls6hlgm5apqlm.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
