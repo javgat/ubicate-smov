@@ -35,8 +35,8 @@ public class LoginDataSource {
             // TODO: handle loggedInUser authentication
             // AUTENTIFICACION SE HACE AQUI
             // Pongo esto para poder observar que pasa cuando no funciona
-            //Task<AuthResult> task = mAuth.createUserWithEmailAndPassword(username, password);
-            Task<AuthResult> task = mAuth.signInWithEmailAndPassword(username, password);
+            Task<AuthResult> task = mAuth.createUserWithEmailAndPassword(username, password);
+            //Task<AuthResult> task = mAuth.signInWithEmailAndPassword(username, password);
             /*.addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                 @Override
                 public void onComplete(@NonNull Task<AuthResult> task) {
@@ -55,11 +55,14 @@ public class LoginDataSource {
             if(task.isSuccessful()) {
                 FirebaseUser fUser = task.getResult().getUser();
                 LoggedInUser usuario = new LoggedInUser(fUser.getUid(),fUser.getDisplayName());
+                //mDatabase.child("usuario").child(fUser.getUid()).child("username").setValue(usuario.getDisplayName());
+                        //setValue(usuario);
                 return new Result.Success<>(usuario);
             }else{
                 return new Result.Error(new IllegalArgumentException("Error de username"));
             }
         } catch (Exception e) {
+            Log.d(TAG, "Error en registro:" + e);
             return new Result.Error(new IOException("Error logging in", e));
         }
     }
