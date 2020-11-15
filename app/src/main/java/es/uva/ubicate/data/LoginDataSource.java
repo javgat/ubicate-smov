@@ -1,5 +1,6 @@
 package es.uva.ubicate.data;
 
+import android.app.Activity;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -7,6 +8,9 @@ import androidx.annotation.NonNull;
 import es.uva.ubicate.data.model.LoggedInUser;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.Executor;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -55,7 +59,20 @@ public class LoginDataSource {
             if(task.isSuccessful()) {
                 FirebaseUser fUser = task.getResult().getUser();
                 LoggedInUser usuario = new LoggedInUser(fUser.getUid(),fUser.getDisplayName());
-                //mDatabase.child("usuario").child(fUser.getUid()).child("username").setValue(usuario.getDisplayName());
+                Map<String, String> userData = new HashMap<String, String>();
+                userData.put("Nombre", "fUser.getDisplayName()");
+                userData.put("Email", fUser.getEmail());
+                Map<String, Map> user = new HashMap<String, Map>();
+                user.put(fUser.getUid(), userData);
+
+                mDatabase.child("usuario").child(fUser.getUid()).setValue(userData).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        Log.d(TAG, "signIn:onComplete:" + task.isSuccessful());
+                    }
+                });
+
+                //mDatabase.child("usuario").child(fUser.getUid()).push()
                         //setValue(usuario);
                 return new Result.Success<>(usuario);
             }else{
