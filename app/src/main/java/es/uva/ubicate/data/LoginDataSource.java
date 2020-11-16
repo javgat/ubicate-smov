@@ -39,27 +39,13 @@ public class LoginDataSource {
             // TODO: handle loggedInUser authentication
             // AUTENTIFICACION SE HACE AQUI
             // Pongo esto para poder observar que pasa cuando no funciona
-            Task<AuthResult> task = mAuth.createUserWithEmailAndPassword(username, password);
-            //Task<AuthResult> task = mAuth.signInWithEmailAndPassword(username, password);
-            /*.addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                @Override
-                public void onComplete(@NonNull Task<AuthResult> task) {
-                    Log.d(TAG, "signIn:onComplete:" + task.isSuccessful());
-                    //hideProgressBar();
-
-                    if (task.isSuccessful()) {
-                        onAuthSuccess(task.getResult().getUser());
-                    } else {
-                        //Toast.makeText(SignInActivity.this, "Sign In Failed",
-                        //        Toast.LENGTH_SHORT).show();
-                    }
-                }
-            });*/
-            while(!task.isComplete()){}
+            //Task<AuthResult> task = mAuth.createUserWithEmailAndPassword(username, password);
+            Task<AuthResult> task = mAuth.signInWithEmailAndPassword(username, password);
+            while(!task.isComplete()){} // Espera activa, no pasa nada pero ha de ser lanzado en background (si no falla si no hay conexion)
             if(task.isSuccessful()) {
                 FirebaseUser fUser = task.getResult().getUser();
                 LoggedInUser usuario = new LoggedInUser(fUser.getUid(),fUser.getDisplayName());
-                Map<String, String> userData = new HashMap<String, String>();
+                /*Map<String, String> userData = new HashMap<String, String>();
                 userData.put("Nombre", "fUser.getDisplayName()");
                 userData.put("Email", fUser.getEmail());
                 Map<String, Map> user = new HashMap<String, Map>();
@@ -70,7 +56,7 @@ public class LoginDataSource {
                     public void onComplete(@NonNull Task<Void> task) {
                         Log.d(TAG, "signIn:onComplete:" + task.isSuccessful());
                     }
-                });
+                });*/
 
                 //mDatabase.child("usuario").child(fUser.getUid()).push()
                         //setValue(usuario);
