@@ -4,7 +4,11 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import android.os.AsyncTask;
+import android.util.Log;
 import android.util.Patterns;
+
+import java.util.HashMap;
 
 import es.uva.ubicate.data.LoginRepository;
 import es.uva.ubicate.data.Result;
@@ -29,9 +33,30 @@ public class LoginViewModel extends ViewModel {
         return loginResult;
     }
 
+    private class LoginTask extends AsyncTask<String, Void,  Result<LoggedInUser>> {
+
+        @Override
+        protected Result<LoggedInUser> doInBackground(String... datos) {
+            Result<LoggedInUser> result = loginRepository.login(datos[0], datos[1]);
+            return result;
+        }
+
+        @Override
+        protected void onPostExecute(Result<LoggedInUser> result){
+            if (result instanceof Result.Success) {
+                LoggedInUser data = ((Result.Success<LoggedInUser>) result).getData();
+                loginResult.setValue(new LoginResult(new LoggedInUserView(data.getDisplayName())));
+            } else {
+                loginResult.setValue(new LoginResult(R.string.login_failed));
+            }
+        }
+    }
+
     // Intenta el logeo y guarda resultado en loginResult, y loginRepository ahora tiene al usuario
     public void login(String username, String password) {
+        new LoginTask().execute(username, password);
         // can be launched in a separate asynchronous job
+/*
         Result<LoggedInUser> result = loginRepository.login(username, password);
 
         if (result instanceof Result.Success) {
@@ -39,7 +64,7 @@ public class LoginViewModel extends ViewModel {
             loginResult.setValue(new LoginResult(new LoggedInUserView(data.getDisplayName())));
         } else {
             loginResult.setValue(new LoginResult(R.string.login_failed));
-        }
+        }*/
     }
 
     // Modifica el LoginFormState para saber si los datos son validos

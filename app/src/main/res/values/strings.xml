@@ -9,4 +9,5 @@
     <string name="invalid_username">Nombre de usuario no válido</string>
     <string name="invalid_password">La contraseña debe tener más de 5 caracteres</string>
     <string name="login_failed">"Error en la autenticación"</string>
+    <string name="Descripcion_logo">Logo de la aplicacion ubicate</string>
 </resources>
