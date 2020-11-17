@@ -40,6 +40,7 @@ public class LoginDataSource {
             // AUTENTIFICACION SE HACE AQUI
             // Pongo esto para poder observar que pasa cuando no funciona
             //Task<AuthResult> task = mAuth.createUserWithEmailAndPassword(username, password);
+
             Task<AuthResult> task = mAuth.signInWithEmailAndPassword(username, password);
             while(!task.isComplete()){} // Espera activa, no pasa nada pero ha de ser lanzado en background (si no falla si no hay conexion)
             if(task.isSuccessful()) {
