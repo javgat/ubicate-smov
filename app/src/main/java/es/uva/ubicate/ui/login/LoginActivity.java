@@ -23,10 +23,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import es.uva.ubicate.MainActivity;
+import es.uva.ubicate.DrawerActivity;
 import es.uva.ubicate.R;
-import es.uva.ubicate.ui.login.LoginViewModel;
-import es.uva.ubicate.ui.login.LoginViewModelFactory;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -132,7 +130,7 @@ public class LoginActivity extends AppCompatActivity {
         String welcome = getString(R.string.welcome) + model.getDisplayName();
         // TODO : initiate successful logged in experience
         Toast.makeText(getApplicationContext(), welcome, Toast.LENGTH_LONG).show();
-        Intent mainAct = new Intent(this, MainActivity.class);
+        Intent mainAct = new Intent(this, DrawerActivity.class);
         startActivity(mainAct);
     }
 
