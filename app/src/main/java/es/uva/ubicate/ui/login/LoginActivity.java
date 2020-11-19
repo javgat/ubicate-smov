@@ -23,6 +23,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+
 import es.uva.ubicate.DrawerActivity;
 import es.uva.ubicate.R;
 
@@ -33,6 +35,11 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if(FirebaseAuth.getInstance().getCurrentUser()!=null){
+            updateUIAlreadyLoggedIn();
+            setResult(Activity.RESULT_OK);
+            finish();
+        }
         setContentView(R.layout.activity_login);
         loginViewModel = new ViewModelProvider(this, new LoginViewModelFactory())
                 .get(LoginViewModel.class);
@@ -137,5 +144,10 @@ public class LoginActivity extends AppCompatActivity {
     // cuando falla el logeo
     private void showLoginFailed(@StringRes Integer errorString) {
         Toast.makeText(getApplicationContext(), errorString, Toast.LENGTH_SHORT).show();
+    }
+
+    private void updateUIAlreadyLoggedIn(){
+        Intent mainAct = new Intent(this, DrawerActivity.class);
+        startActivity(mainAct);
     }
 }
