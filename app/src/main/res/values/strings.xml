@@ -30,4 +30,12 @@
     <string name="dialog_logout">¿Cerrar sesión?</string>
     <string name="ok">Ok</string>
     <string name="cancel">Cancelar</string>
+    <string name="menu_chat">Chats</string>
+    <string name="menu_domain">Organización</string>
+    <string name="text_join_domain">Unirse a una organización</string>
+    <string name="text_create_domain">Crea una organización</string>
+    <string name="placeholder_join_domain">Código de organización</string>
+    <string name="button_join_domain">Unirse</string>
+    <string name="placeholder_create_domain">Nombre de organización</string>
+    <string name="button_create_domain">Crear</string>
 </resources>
