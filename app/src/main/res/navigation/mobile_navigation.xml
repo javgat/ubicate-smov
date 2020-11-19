@@ -12,13 +12,24 @@
         tools:layout="@layout/fragment_home" />
 
     <fragment
-        android:id="@+id/nav_gallery"
+        android:id="@+id/nav_maps"
         android:name="es.uva.ubicate.ui.map.MapsFragment"
         android:label="@string/menu_gallery"
         tools:layout="@layout/fragment_maps" />
 
     <fragment
-        android:id="@+id/nav_slideshow"
+        android:id="@+id/nav_chat"
+        android:name="es.uva.ubicate.ui.chat.ChatsFragment"
+        android:label="@string/menu_chat"
+        tools:layout="@layout/fragment_chats" />
+    <fragment
+        android:id="@+id/nav_domain"
+        android:name="es.uva.ubicate.ui.domain.DomainFragment"
+        android:label="@string/menu_domain"
+        tools:layout="@layout/fragment_domain"  />
+
+    <fragment
+        android:id="@+id/nav_profile"
         android:name="es.uva.ubicate.ui.profile.ProfileFragment"
         android:label="@string/menu_profile"
         tools:layout="@layout/fragment_profile" />
