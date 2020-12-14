@@ -1,22 +1,36 @@
 package es.uva.ubicate;
 
+import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
+import android.provider.Settings;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Menu;
 import android.widget.TextView;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.app.ActivityCompat;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -25,9 +39,16 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import java.util.Calendar;
+import java.util.Date;
+
 public class DrawerActivity extends AppCompatActivity {
 
     private AppBarConfiguration mAppBarConfiguration;
+    private LocationListener locationListener;
+    private LocationManager locationManager;
+
+    private String TAG = "DrawerActivity";
 
     private void updateUserDataDrawer(){
         TextView title = (TextView) findViewById(R.id.textTitleView);
@@ -63,8 +84,63 @@ public class DrawerActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
-
+        locationListener = new LocationListener() {
+            @Override
+            public void onLocationChanged(@NonNull Location loc) {
+                Log.d(TAG, "Location cambiada");
+                LatLng locUser = new LatLng(loc.getLatitude(), loc.getLongitude());
+                DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
+                FirebaseAuth mAuth = FirebaseAuth.getInstance();
+                mDatabase.child("usuario").child(mAuth.getUid()).child("latitude").setValue(loc.getLatitude());
+                mDatabase.child("usuario").child(mAuth.getUid()).child("longitude").setValue(loc.getLongitude());
+                Date currentTime = Calendar.getInstance().getTime();
+                mDatabase.child("usuario").child(mAuth.getUid()).child("date").setValue(currentTime.toString());
+            }
+        };
+        locationManager = (LocationManager) DrawerActivity.this.getSystemService(Context.LOCATION_SERVICE); //vs getApplicationContext()
+        localizacion();
     }
+
+    private void localizacion(){
+
+        if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            OnGPS();
+        }else {
+            getLocation();
+        }
+    }
+
+    private void OnGPS() {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(DrawerActivity.this);
+        builder.setMessage("Enable GPS").setCancelable(false).setPositiveButton("Yes", new  DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                localizacion();
+            }
+        }).setNegativeButton("No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+        final AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+    }
+
+    private void getLocation() {
+        int REQUEST_LOCATION = 1;
+        Location locationGPS;
+        if (ActivityCompat.checkSelfPermission(DrawerActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
+                ActivityCompat.checkSelfPermission(DrawerActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(DrawerActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION);
+            ActivityCompat.requestPermissions(DrawerActivity.this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, REQUEST_LOCATION);
+            getLocation();
+        }else{
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 1, locationListener);
+        }
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
