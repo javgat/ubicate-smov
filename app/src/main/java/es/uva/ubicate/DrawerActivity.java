@@ -2,9 +2,12 @@ package es.uva.ubicate;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.Notification;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
@@ -17,8 +20,18 @@ import android.view.View;
 import android.view.Menu;
 import android.widget.TextView;
 
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.common.api.ResolvableApiException;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResponse;
+import com.google.android.gms.location.LocationSettingsStates;
+import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.navigation.NavigationView;
@@ -31,6 +44,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -47,6 +61,8 @@ public class DrawerActivity extends AppCompatActivity {
     private AppBarConfiguration mAppBarConfiguration;
     private LocationListener locationListener;
     private LocationManager locationManager;
+
+    protected static final int REQUEST_CHECK_SETTINGS = 0x1;
 
     private String TAG = "DrawerActivity";
 
@@ -84,61 +100,84 @@ public class DrawerActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
-        locationListener = new LocationListener() {
-            @Override
-            public void onLocationChanged(@NonNull Location loc) {
-                Log.d(TAG, "Location cambiada");
-                LatLng locUser = new LatLng(loc.getLatitude(), loc.getLongitude());
-                DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
-                FirebaseAuth mAuth = FirebaseAuth.getInstance();
-                mDatabase.child("usuario").child(mAuth.getUid()).child("latitude").setValue(loc.getLatitude());
-                mDatabase.child("usuario").child(mAuth.getUid()).child("longitude").setValue(loc.getLongitude());
-                Date currentTime = Calendar.getInstance().getTime();
-                mDatabase.child("usuario").child(mAuth.getUid()).child("date").setValue(currentTime.toString());
-            }
-        };
-        locationManager = (LocationManager) DrawerActivity.this.getSystemService(Context.LOCATION_SERVICE); //vs getApplicationContext()
-        localizacion();
-    }
 
-    private void localizacion(){
+        LocationRequest locationRequest = createLocationRequest();
+        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
+                .addLocationRequest(locationRequest);
+        Task<LocationSettingsResponse> task =
+                LocationServices.getSettingsClient(this).checkLocationSettings(builder.build());
 
-        if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            OnGPS();
-        }else {
-            getLocation();
-        }
-    }
-
-    private void OnGPS() {
-        final AlertDialog.Builder builder = new AlertDialog.Builder(DrawerActivity.this);
-        builder.setMessage("Enable GPS").setCancelable(false).setPositiveButton("Yes", new  DialogInterface.OnClickListener() {
+        task.addOnCompleteListener(new OnCompleteListener<LocationSettingsResponse>() {
             @Override
-            public void onClick(DialogInterface dialog, int which) {
-                startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
-                localizacion();
-            }
-        }).setNegativeButton("No", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
+            public void onComplete(Task<LocationSettingsResponse> task) {
+                try {
+                    LocationSettingsResponse response = task.getResult(ApiException.class);
+                    // All location settings are satisfied. The client can initialize location
+                    // requests here.
+                    launchUpdateLocationService();
+                } catch (ApiException exception) {
+                    switch (exception.getStatusCode()) {
+                        case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
+                            // Location settings are not satisfied. But could be fixed by showing the
+                            // user a dialog.
+                            try {
+                                // Cast to a resolvable exception.
+                                ResolvableApiException resolvable = (ResolvableApiException) exception;
+                                // Show the dialog by calling startResolutionForResult(),
+                                // and check the result in onActivityResult().
+                                resolvable.startResolutionForResult(
+                                        DrawerActivity.this,
+                                        REQUEST_CHECK_SETTINGS);
+                            } catch (IntentSender.SendIntentException e) {
+                                // Ignore the error.
+                            } catch (ClassCastException e) {
+                                // Ignore, should be an impossible error.
+                            }
+                            break;
+                        case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
+                            Log.d(TAG, "Settings change unavailable");
+                            exit();
+                            break;
+                    }
+                }
             }
         });
-        final AlertDialog alertDialog = builder.create();
-        alertDialog.show();
     }
 
-    private void getLocation() {
-        int REQUEST_LOCATION = 1;
-        Location locationGPS;
-        if (ActivityCompat.checkSelfPermission(DrawerActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
-                ActivityCompat.checkSelfPermission(DrawerActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(DrawerActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION);
-            ActivityCompat.requestPermissions(DrawerActivity.this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, REQUEST_LOCATION);
-            getLocation();
-        }else{
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 1, locationListener);
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        final LocationSettingsStates states = LocationSettingsStates.fromIntent(data);
+        switch (requestCode) {
+            case REQUEST_CHECK_SETTINGS:
+                switch (resultCode) {
+                    case Activity.RESULT_OK:
+                        // All required changes were successfully made
+                        launchUpdateLocationService();
+                        break;
+                    case Activity.RESULT_CANCELED:
+                        // The user was asked to change settings, but chose not to
+                        exit();
+                        break;
+                    default:
+                        break;
+                }
+                break;
         }
+    }
+
+    private void launchUpdateLocationService(){
+        Intent updateLoc = new Intent(DrawerActivity.this, UpdateLocationService.class);
+        updateLoc.putExtra("inputExtra", "Foreground Service Example in Android");
+        ContextCompat.startForegroundService(DrawerActivity.this, updateLoc);
+    }
+
+    protected LocationRequest createLocationRequest() {
+        LocationRequest locationRequest = LocationRequest.create();
+        locationRequest.setInterval(10000);
+        locationRequest.setFastestInterval(5000);
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        return locationRequest;
     }
 
 
@@ -170,8 +209,7 @@ public class DrawerActivity extends AppCompatActivity {
                         .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 FirebaseAuth.getInstance().signOut();
-                                setResult(Activity.RESULT_OK);
-                                finish();
+                                exit();
                                 //quiza en vez de esto que abra el login de nuevo
                             }
                         })
@@ -187,5 +225,10 @@ public class DrawerActivity extends AppCompatActivity {
             default:
                 return false;
         }
+    }
+
+    public void exit(){
+        setResult(Activity.RESULT_OK);
+        finish();
     }
 }
