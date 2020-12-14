@@ -1,9 +1,41 @@
 package es.uva.ubicate;
 
+import android.Manifest;
 import android.app.IntentService;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.app.Service;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Context;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.media.tv.TvContract;
+import android.os.Build;
+import android.os.HandlerThread;
+import android.os.IBinder;
+import android.os.Looper;
+import android.provider.Settings;
 import android.util.Log;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
+
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  * An {@link IntentService} subclass for handling asynchronous task requests in
@@ -13,25 +45,77 @@ import android.util.Log;
  * TODO: Customize class - update intent actions, extra parameters and static
  * helper methods.
  */
-public class UpdateLocationService extends IntentService {
+public class UpdateLocationService extends Service {
 
+    private LocationListener locationListener;
+    private LocationManager locationManager;
+    private Looper serviceLooper;
     // TODO: Rename actions, choose action names that describe tasks that this
     // IntentService can perform, e.g. ACTION_FETCH_NEW_ITEMS
-    private static final String ACTION_UPDATE_LOCATION = "es.uva.ubicate.action.UPDATE_LOCATION";
+    public static final String ACTION_UPDATE_LOCATION = "es.uva.ubicate.action.UPDATE_LOCATION";
 
-    // TODO: Rename parameters
-    private static final String EXTRA_PARAM1 = "es.uva.ubicate.extra.PARAM1";
+
+    public static final String CHANNEL_ID = "ForegroundServiceChannel";
 
     private static final String TAG = "UpdateLocationService";
 
     public UpdateLocationService() {
-        super("UpdateLocationService");
+        super();
     }
 
     @Override
     public void onCreate() {
-        super.onCreate();
         Log.d( TAG, "onCreated" );
+        //HandlerThread thread = new HandlerThread("ServiceStartArguments", Thread.MIN_PRIORITY);
+        //thread.start();
+        //serviceLooper = thread.getLooper();
+        locationManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
+        locationListener = new LocationListener() {
+            @Override
+            public void onLocationChanged(@NonNull Location loc) {
+                Log.d(TAG, "Location cambiada");
+                LatLng locUser = new LatLng(loc.getLatitude(), loc.getLongitude());
+                DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
+                FirebaseAuth mAuth = FirebaseAuth.getInstance();
+                mDatabase.child("usuario").child(mAuth.getUid()).child("latitude").setValue(loc.getLatitude());
+                mDatabase.child("usuario").child(mAuth.getUid()).child("longitude").setValue(loc.getLongitude());
+                Date currentTime = Calendar.getInstance().getTime();
+                mDatabase.child("usuario").child(mAuth.getUid()).child("date").setValue(currentTime.toString());
+            }
+        };
+
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        String input = intent.getStringExtra("inputExtra");
+        createNotificationChannel();
+        Intent notificationIntent = new Intent(this, DrawerActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this,
+                0, notificationIntent, 0);
+        Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
+                .setContentTitle("Foreground Service")
+                .setContentText(input)
+                //.setSmallIcon(R.drawable.ic_stat_name)
+                .setContentIntent(pendingIntent)
+                .build();
+        startForeground(1, notification);
+
+
+        localizacion();
+        return START_NOT_STICKY;
+    }
+
+    private void createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel serviceChannel = new NotificationChannel(
+                    CHANNEL_ID,
+                    "Foreground Service Channel",
+                    NotificationManager.IMPORTANCE_DEFAULT
+            );
+            NotificationManager manager = getSystemService(NotificationManager.class);
+            manager.createNotificationChannel(serviceChannel);
+        }
     }
 
     @Override
@@ -40,40 +124,61 @@ public class UpdateLocationService extends IntentService {
         Log.d( TAG, "onDestroyed" );
     }
 
+    @Nullable
+    @Override
+    public IBinder onBind(Intent intent) {
+        return null;
+    }
+
     /**
      * Starts this service to perform action Foo with the given parameters. If
      * the service is already performing a task this action will be queued.
      *
      * @see IntentService
      */
-    // TODO: Customize helper method
-    public static void startActionFoo(Context context, String param1, String param2) {
+    public static void startActionUpdateLocation(Context context) {
         Intent intent = new Intent(context, UpdateLocationService.class);
         intent.setAction(ACTION_UPDATE_LOCATION);
-        intent.putExtra(EXTRA_PARAM1, param1);
         context.startService(intent);
     }
 
-    @Override
-    protected void onHandleIntent(Intent intent) {
-        Log.d( TAG, "onHandleIntent..." );
-        if (intent != null) {
-            final String action = intent.getAction();
-            if (ACTION_UPDATE_LOCATION.equals(action)) {
-                final String param1 = intent.getStringExtra(EXTRA_PARAM1);
-                handleActionUpdateLocation(param1);
-            }else  {
-                Log.e( TAG, "Action not yet implemented!" );
-            }
+    private void localizacion(){
+        Log.d(TAG, "Lanzo localizacion()");
+
+        if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            Log.d(TAG, "woopsie doopsie");
+            //OnGPS();
+        }else {
+            getLocation();
         }
     }
 
-    /**
-     * Handle action Foo in the provided background thread with the provided
-     * parameters.
-     */
-    private void handleActionUpdateLocation(String param1) {
-        // TODO: Handle action Foo
-        throw new UnsupportedOperationException("Not yet implemented");
+    private void OnGPS() {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getApplicationContext());
+        builder.setMessage("Enable GPS").setCancelable(false).setPositiveButton("Yes", new  DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                //localizacion();
+            }
+        }).setNegativeButton("No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+        final AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+    }
+
+    private void getLocation() {
+        int REQUEST_LOCATION = 1;
+        Location locationGPS;
+        if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_BACKGROUND_LOCATION) == PackageManager.PERMISSION_GRANTED){
+            int numSegundos = 10;
+            Log.d(TAG, "Location updates requested");
+
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, numSegundos*1000, 1, locationListener);
+        }
     }
 }
