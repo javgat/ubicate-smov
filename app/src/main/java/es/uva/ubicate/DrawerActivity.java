@@ -101,7 +101,8 @@ public class DrawerActivity extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
 
-        locationRequest = createLocationRequest();
+        if(locationRequest==null)
+            locationRequest = createLocationRequest();
         LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
                 .addLocationRequest(locationRequest);
         Task<LocationSettingsResponse> task =

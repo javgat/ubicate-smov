@@ -21,6 +21,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -28,6 +30,17 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import es.uva.ubicate.DrawerActivity;
 import es.uva.ubicate.R;
@@ -36,9 +49,7 @@ public class MapsFragment extends Fragment {
 
     private final String TAG = "MapsFragment";
 
-
-    private LocationManager locationManager;
-    private LocationListener locationListener;
+    private final int ZOOM_CAMERA = 16; //Entre 2 y 21 tiene que ser, 21 full zoom
 
     private OnMapReadyCallback callback = new OnMapReadyCallback() {
 
@@ -53,30 +64,92 @@ public class MapsFragment extends Fragment {
          */
         @Override
         public void onMapReady(GoogleMap googleMap) {
-            LatLng vall = new LatLng(41.6524076, -4.7246467);
+            /*LatLng vall = new LatLng(41.6524076, -4.7246467);
             googleMap.addMarker(new MarkerOptions().position(vall).title("Marcador en Valladolid"));
-            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(vall, 1));
-            Marker markUser = googleMap.addMarker(new MarkerOptions().position(vall).title("Tu ubicacion"));
-            markUser.setVisible(false);
-            locationManager = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
-            /*
-            locationListener = new LocationListener() {
-                @Override
-                public void onLocationChanged(@NonNull Location loc) {
-                    Log.d(TAG, "Location cambiada");
-                    LatLng locUser = new LatLng(loc.getLatitude(), loc.getLongitude());
-                    markUser.setPosition(locUser);
-                    markUser.setVisible(true);
-                    googleMap.moveCamera(CameraUpdateFactory.newLatLng(locUser));
-                }
-            };*/
-            locationListener = null;
-            /*if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-                OnGPS();
-            }else {
-                getLocation();
-            }*/
+            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(vall, 17));*/
+            updateMap(googleMap);
 
+        }
+
+        public void updateMap(GoogleMap googleMap) {
+            DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
+            FirebaseAuth mAuth = FirebaseAuth.getInstance();
+            LatLng vall = new LatLng(41.6524076, -4.7246467); //LatLng de default para inicial
+
+            DatabaseReference mMesRef = mDatabase.child("usuario").child(mAuth.getUid()).child("empresa");
+            Log.d(TAG, "Pidiendo datos  del server");
+            mMesRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    String empresaId = dataSnapshot.getValue(String.class);
+                    Log.d(TAG, "Recibido datos de usuario, es de la empresa " + empresaId);
+                    mDatabase.child("empresa").child(empresaId).child("miembros").addChildEventListener(new ChildEventListener() {
+                        @Override
+                        public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                            String peer = snapshot.getKey();
+                            Log.d(TAG, "Recibido datos de empresa, miembro: " + peer);
+                            Marker markPeer = googleMap.addMarker(new MarkerOptions().position(vall).visible(false).title(peer));
+
+                            mDatabase.child("usuario").child(peer).addValueEventListener(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                    Log.d(TAG, "Recibido datos de compa");
+                                    double latitude = snapshot.child("latitude").getValue(Double.class);
+                                    double longitude = snapshot.child("longitude").getValue(Double.class);
+                                    String date = snapshot.child("date").getValue(String.class);
+                                    Log.d(TAG, "El pibe está en " + latitude + " " + longitude);
+                                    Log.d(TAG, "Eso a las " + date);
+                                    LatLng peerLL = new LatLng(Double.valueOf(latitude), Double.valueOf(longitude));
+                                    markPeer.setPosition(peerLL);
+
+                                    if(peer.equals(mAuth.getUid())){
+                                        markPeer.setTitle("Tu ubicacion");
+                                        markPeer.setSnippet("¡Este eres tú!");
+                                        if(!markPeer.isVisible())//la primera vez no es visible, asi que no se mueve el zoom every time
+                                            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(peerLL, ZOOM_CAMERA));
+                                    }else{
+                                        markPeer.setTitle(snapshot.child("public_name").getValue(String.class));
+                                        markPeer.setSnippet(date);
+                                    }
+                                    markPeer.setVisible(true);
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError error) {
+                                    Log.d(TAG, "Error al acceder a los datos de " + peer + ", cual es su ubicacion " + error);
+                                }
+                            });
+
+                        }
+
+                        @Override
+                        public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+
+                        }
+
+                        @Override
+                        public void onChildRemoved(@NonNull DataSnapshot snapshot) {
+
+                        }
+
+                        @Override
+                        public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+                            Log.d(TAG, "Error al acceder a los datos de la empresa, cuales son sus usuarios " + error);
+
+                        }
+                    });
+                }
+
+                @Override
+                public void onCancelled(DatabaseError error) {
+                    Log.d(TAG, "Error al acceder a los datos del usuario, cual es su empresa " + error);
+                }
+            });
         }
     };
 
@@ -86,6 +159,7 @@ public class MapsFragment extends Fragment {
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_maps, container, false);
+
     }
 
     @Override
@@ -99,34 +173,4 @@ public class MapsFragment extends Fragment {
         }
     }
 
-    private void OnGPS() {
-        final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        builder.setMessage("Enable GPS").setCancelable(false).setPositiveButton("Yes", new  DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
-            }
-        }).setNegativeButton("No", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-            }
-        });
-        final AlertDialog alertDialog = builder.create();
-        alertDialog.show();
-    }
-
-
-
-    private void getLocation() {
-        int REQUEST_LOCATION = 1;
-        Location locationGPS;
-        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
-                ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION);
-            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, REQUEST_LOCATION);
-        }else{
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 100, 0, locationListener);
-        }
-    }
 }
