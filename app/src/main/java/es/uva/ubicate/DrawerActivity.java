@@ -59,8 +59,8 @@ import java.util.Date;
 public class DrawerActivity extends AppCompatActivity {
 
     private AppBarConfiguration mAppBarConfiguration;
-    private LocationListener locationListener;
-    private LocationManager locationManager;
+    private LocationRequest locationRequest;
+    private Intent updateLocationService;
 
     protected static final int REQUEST_CHECK_SETTINGS = 0x1;
 
@@ -101,7 +101,7 @@ public class DrawerActivity extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
 
-        LocationRequest locationRequest = createLocationRequest();
+        locationRequest = createLocationRequest();
         LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
                 .addLocationRequest(locationRequest);
         Task<LocationSettingsResponse> task =
@@ -167,16 +167,18 @@ public class DrawerActivity extends AppCompatActivity {
     }
 
     private void launchUpdateLocationService(){
-        Intent updateLoc = new Intent(DrawerActivity.this, UpdateLocationService.class);
-        updateLoc.putExtra("inputExtra", "Foreground Service Example in Android");
-        ContextCompat.startForegroundService(DrawerActivity.this, updateLoc);
+        updateLocationService = new Intent(DrawerActivity.this, UpdateLocationService.class);
+        updateLocationService.putExtra("inputExtra", "Foreground Service Example in Android");
+        updateLocationService.putExtra("locationRequest", locationRequest);
+        ContextCompat.startForegroundService(DrawerActivity.this, updateLocationService);
     }
 
     protected LocationRequest createLocationRequest() {
         LocationRequest locationRequest = LocationRequest.create();
-        locationRequest.setInterval(10000);
-        locationRequest.setFastestInterval(5000);
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        locationRequest.setInterval(60000);
+        locationRequest.setFastestInterval(15000);
+        // Si la ubicacion fuera inexacta cambiar a HIGH ACCURACY
+        locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
         return locationRequest;
     }
 
@@ -227,7 +229,14 @@ public class DrawerActivity extends AppCompatActivity {
         }
     }
 
+    // Para que se llame desde una clase interior con un boton
+    public void stopLocationService(){
+        if(updateLocationService!=null)
+            stopService(updateLocationService); // No se si funciona esto, comprobar
+    }
+
     public void exit(){
+        stopLocationService();
         setResult(Activity.RESULT_OK);
         finish();
     }

@@ -28,7 +28,11 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
@@ -47,11 +51,10 @@ import java.util.Date;
  */
 public class UpdateLocationService extends Service {
 
-    private LocationListener locationListener;
+    private LocationCallback locationCallback;
     private LocationManager locationManager;
+    LocationRequest locationRequest;
     private Looper serviceLooper;
-    // TODO: Rename actions, choose action names that describe tasks that this
-    // IntentService can perform, e.g. ACTION_FETCH_NEW_ITEMS
     public static final String ACTION_UPDATE_LOCATION = "es.uva.ubicate.action.UPDATE_LOCATION";
 
 
@@ -66,35 +69,44 @@ public class UpdateLocationService extends Service {
     @Override
     public void onCreate() {
         Log.d( TAG, "onCreated" );
-        //HandlerThread thread = new HandlerThread("ServiceStartArguments", Thread.MIN_PRIORITY);
-        //thread.start();
-        //serviceLooper = thread.getLooper();
+        HandlerThread thread = new HandlerThread("ServiceStartArguments", Thread.MIN_PRIORITY);
+        thread.start();
+        serviceLooper = thread.getLooper();
         locationManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
-        locationListener = new LocationListener() {
+        locationCallback = new LocationCallback(){
             @Override
-            public void onLocationChanged(@NonNull Location loc) {
-                Log.d(TAG, "Location cambiada");
-                LatLng locUser = new LatLng(loc.getLatitude(), loc.getLongitude());
-                DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
-                FirebaseAuth mAuth = FirebaseAuth.getInstance();
-                mDatabase.child("usuario").child(mAuth.getUid()).child("latitude").setValue(loc.getLatitude());
-                mDatabase.child("usuario").child(mAuth.getUid()).child("longitude").setValue(loc.getLongitude());
-                Date currentTime = Calendar.getInstance().getTime();
-                mDatabase.child("usuario").child(mAuth.getUid()).child("date").setValue(currentTime.toString());
+            public void onLocationResult(LocationResult locationResult) {
+                if (locationResult == null) {
+                    return;
+                }
+                Location loc = locationResult.getLastLocation();
+                updateServerLocation(loc);
             }
         };
 
     }
 
+    private void updateServerLocation(Location loc){
+        Log.d(TAG, "Location cambiada");
+        LatLng locUser = new LatLng(loc.getLatitude(), loc.getLongitude());
+        DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        mDatabase.child("usuario").child(mAuth.getUid()).child("latitude").setValue(loc.getLatitude());
+        mDatabase.child("usuario").child(mAuth.getUid()).child("longitude").setValue(loc.getLongitude());
+        Date currentTime = Calendar.getInstance().getTime();
+        mDatabase.child("usuario").child(mAuth.getUid()).child("date").setValue(currentTime.toString());
+    }
+
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         String input = intent.getStringExtra("inputExtra");
+        locationRequest = intent.getParcelableExtra("locationRequest");
         createNotificationChannel();
         Intent notificationIntent = new Intent(this, DrawerActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this,
                 0, notificationIntent, 0);
         Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
-                .setContentTitle("Foreground Service")
+                .setContentTitle("Compartiendo ubicación")
                 .setContentText(input)
                 //.setSmallIcon(R.drawable.ic_stat_name)
                 .setContentIntent(pendingIntent)
@@ -147,6 +159,7 @@ public class UpdateLocationService extends Service {
 
         if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             Log.d(TAG, "woopsie doopsie");
+            getLocation();
             //OnGPS();
         }else {
             getLocation();
@@ -174,11 +187,11 @@ public class UpdateLocationService extends Service {
     private void getLocation() {
         int REQUEST_LOCATION = 1;
         Location locationGPS;
-        if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_BACKGROUND_LOCATION) == PackageManager.PERMISSION_GRANTED){
+        if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
             int numSegundos = 10;
             Log.d(TAG, "Location updates requested");
-
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, numSegundos*1000, 1, locationListener);
+            FusedLocationProviderClient fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+            fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, serviceLooper);
         }
     }
 }
