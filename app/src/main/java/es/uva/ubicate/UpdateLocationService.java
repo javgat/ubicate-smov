@@ -41,6 +41,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import java.util.Calendar;
 import java.util.Date;
 
+import es.uva.ubicate.persistence.FirebaseDAO;
+
 /**
  * An {@link IntentService} subclass for handling asynchronous task requests in
  * a service on a separate handler thread.
@@ -89,12 +91,9 @@ public class UpdateLocationService extends Service {
     private void updateServerLocation(Location loc){
         Log.d(TAG, "Location cambiada");
         LatLng locUser = new LatLng(loc.getLatitude(), loc.getLongitude());
-        DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
-        FirebaseAuth mAuth = FirebaseAuth.getInstance();
-        mDatabase.child("usuario").child(mAuth.getUid()).child("latitude").setValue(loc.getLatitude());
-        mDatabase.child("usuario").child(mAuth.getUid()).child("longitude").setValue(loc.getLongitude());
         Date currentTime = Calendar.getInstance().getTime();
-        mDatabase.child("usuario").child(mAuth.getUid()).child("date").setValue(currentTime.toString());
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        FirebaseDAO.setLocation(mAuth.getUid(), locUser, currentTime);
     }
 
     @Override
@@ -194,4 +193,5 @@ public class UpdateLocationService extends Service {
             fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, serviceLooper);
         }
     }
+
 }
