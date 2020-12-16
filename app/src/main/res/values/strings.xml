@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">Ubicate</string>
+    <string name="hint_search">Buscar...</string>
     <string name="title_activity_login">Iniciar Sesión</string>
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password</string>
@@ -28,7 +29,7 @@
     <string name="updated_failure">Fallo al actualizar el perfil</string>
     <string name="action_logout">Cerrar sesión</string>
     <string name="dialog_logout">¿Cerrar sesión?</string>
-    <string name="ok">Ok</string>
+    <string name="ok">OK</string>
     <string name="cancel">Cancelar</string>
     <string name="menu_chat">Chats</string>
     <string name="menu_domain">Organización</string>
