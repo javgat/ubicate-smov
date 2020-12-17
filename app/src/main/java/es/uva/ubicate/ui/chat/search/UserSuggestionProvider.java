@@ -1,4 +1,4 @@
-package es.uva.ubicate.search;
+package es.uva.ubicate.ui.chat.search;
 
 import android.app.SearchManager;
 import android.content.ContentProvider;
@@ -21,7 +21,7 @@ import okhttp3.Response;
 
 public class UserSuggestionProvider extends ContentProvider {
 
-    private static final String AUTHORITY = "es.uva.ubicate.search.UserSuggestionProvider";
+    private static final String AUTHORITY = "es.uva.ubicate.ui.chat.search.UserSuggestionProvider";
 
     private static final int TYPE_ALL_SUGGESTIONS = 1;
     private static final int TYPE_SINGLE_SUGGESTION = 2;

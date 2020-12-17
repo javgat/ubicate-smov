@@ -1,18 +1,15 @@
-package es.uva.ubicate.search;
+package es.uva.ubicate.ui.chat.search;
 import android.app.SearchManager;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.widget.SearchView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.view.MenuItemCompat;
 
 import es.uva.ubicate.R;
 
@@ -30,6 +27,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the options menu from XML
+        /*
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.drawer, menu);
 
@@ -40,7 +38,7 @@ public class MainActivity extends AppCompatActivity
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
         searchView.setIconifiedByDefault(false); // Do not iconify the widget; expand it by default
 
-
+*/
         return true;
     }
 

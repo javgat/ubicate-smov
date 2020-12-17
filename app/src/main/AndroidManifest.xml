@@ -19,25 +19,14 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Ubicate">
-
-        <activity
-            android:name=".search.MainActivity"
-            android:launchMode="singleTop">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
-        </activity>
-
         <service
             android:name=".UpdateLocationService"
             android:enabled="true"
             android:exported="true"
             android:foregroundServiceType="location" />
         <provider
-            android:name=".search.UserSuggestionProvider"
-            android:authorities="es.uva.ubicate.search.UserSuggestionProvider"
+            android:name=".ui.chat.search.UserSuggestionProvider"
+            android:authorities="es.uva.ubicate.ui.chat.search.UserSuggestionProvider"
             android:enabled="true"
             android:exported="true"/>
         <!--
@@ -52,7 +41,7 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
 
-        <activity android:name=".search.SearchableActivity" >
+        <activity android:name=".ui.chat.search.SearchableActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
             </intent-filter>
@@ -71,6 +60,11 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".ui.chat.search.MainActivity"
+            android:launchMode="singleTop">
         </activity>
     </application>
 
