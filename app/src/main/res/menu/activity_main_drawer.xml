@@ -5,10 +5,6 @@
 
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_profile"
-            android:icon="@drawable/baseline_person_black_18dp"
-            android:title="@string/menu_profile" />
-        <item
             android:id="@+id/nav_home"
             android:icon="@drawable/baseline_pending_actions_black_18dp"
             android:title="@string/menu_home" />
@@ -24,6 +20,10 @@
             android:id="@+id/nav_domain"
             android:icon="@drawable/baseline_domain_black_18dp"
             android:title="@string/menu_domain" />
+        <item
+            android:id="@+id/nav_profile"
+            android:icon="@drawable/baseline_person_black_18dp"
+            android:title="@string/menu_profile" />
         <item
             android:id="@+id/nav_logout"
             android:icon="@drawable/logout"
