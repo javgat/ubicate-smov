@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Ubicate</string>
-    <string name="hint_search">Buscar...</string>
+    <string name="hint_search">Buscar…</string>
     <string name="title_activity_login">Iniciar Sesión</string>
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password</string>
@@ -27,7 +27,7 @@
     <string name="invalid_name">El nombre no puede estar vacío</string>
     <string name="updated_success">Perfil actualizado con éxito</string>
     <string name="updated_failure">Fallo al actualizar el perfil</string>
-    <string name="action_logout">Cerrar sesión</string>
+    <string name="menu_logout">Cerrar sesión</string>
     <string name="dialog_logout">¿Cerrar sesión?</string>
     <string name="ok">OK</string>
     <string name="cancel">Cancelar</string>
