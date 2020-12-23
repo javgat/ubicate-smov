@@ -26,7 +26,7 @@
             android:title="@string/menu_profile" />
         <item
             android:id="@+id/nav_logout"
-            android:icon="@drawable/logout"
+            android:icon="@drawable/baseline_logout"
             android:title="@string/menu_logout" />
 
     </group>
