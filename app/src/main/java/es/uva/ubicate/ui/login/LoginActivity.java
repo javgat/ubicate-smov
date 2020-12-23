@@ -37,8 +37,7 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         if(FirebaseAuth.getInstance().getCurrentUser()!=null){
             updateUIAlreadyLoggedIn();
-            setResult(Activity.RESULT_OK);
-            finish();
+            finActivity();
         }
         setContentView(R.layout.activity_login);
         loginViewModel = new ViewModelProvider(this, new LoginViewModelFactory())
@@ -80,10 +79,7 @@ public class LoginActivity extends AppCompatActivity {
                 if (loginResult.getSuccess() != null) {
                     updateUiWithUser(loginResult.getSuccess());
                     //}
-                    setResult(Activity.RESULT_OK);
-
-                    //Complete and destroy login activity once successful
-                    finish();
+                    finActivity();
                 }
                 // Creo que finish solo si lo logra
             }
@@ -130,6 +126,14 @@ public class LoginActivity extends AppCompatActivity {
                         passwordEditText.getText().toString());
             }
         });
+    }
+
+    public void finActivity(){
+        //Lo comento para que no cierre cuando logout
+        /*
+        setResult(Activity.RESULT_OK);
+        finish();
+         */
     }
 
     // cuanto tiene exito

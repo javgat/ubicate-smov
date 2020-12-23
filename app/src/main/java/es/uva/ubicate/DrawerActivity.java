@@ -206,25 +206,6 @@ public class DrawerActivity extends AppCompatActivity {
             case R.id.action_settings:
                 //startActivity(new Intent(this, SettingsActivity.class));
                 return true;
-            /*case R.id.action_logout:
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setMessage(R.string.dialog_logout)
-                        .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                FirebaseAuth.getInstance().signOut();
-                                exit();
-                                //quiza en vez de esto que abra el login de nuevo
-                            }
-                        })
-                        .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                // User cancelled the dialog
-                            }
-                        });//.show
-                // Create the AlertDialog object and return it
-                AlertDialog dialog = builder.create();
-                dialog.show();
-                return true;*/
             default:
                 return false;
         }
@@ -233,7 +214,7 @@ public class DrawerActivity extends AppCompatActivity {
     // Para que se llame desde una clase interior con un boton
     public void stopLocationService(){
         if(updateLocationService!=null)
-            stopService(updateLocationService); // No se si funciona esto, comprobar
+            stopService(updateLocationService);
     }
 
     public void exit(){
