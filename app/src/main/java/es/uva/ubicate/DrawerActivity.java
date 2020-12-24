@@ -16,9 +16,13 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.PointerIcon;
 import android.view.View;
 import android.view.Menu;
+import android.widget.CompoundButton;
+import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.ResolvableApiException;
@@ -43,6 +47,8 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.view.menu.ActionMenuItemView;
+import androidx.appcompat.widget.SwitchCompat;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.navigation.NavController;
@@ -101,6 +107,11 @@ public class DrawerActivity extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
 
+        tryActivateLocation();
+
+    }
+
+    private void tryActivateLocation(){
         if(locationRequest==null)
             locationRequest = createLocationRequest();
         LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
@@ -172,6 +183,7 @@ public class DrawerActivity extends AppCompatActivity {
         updateLocationService.putExtra("inputExtra", "Foreground Service Example in Android");
         updateLocationService.putExtra("locationRequest", locationRequest);
         ContextCompat.startForegroundService(DrawerActivity.this, updateLocationService);
+        showStartLocation();
     }
 
     protected LocationRequest createLocationRequest() {
@@ -188,8 +200,10 @@ public class DrawerActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.drawer, menu);
+
         //Lo de update este deberia ir en otra parte pero bueno funca si esta aqui
         updateUserDataDrawer();
+
         return true;
     }
 
@@ -203,18 +217,44 @@ public class DrawerActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.change_ubi_serv:
+                Log.d(TAG, "Pulsado switch");
+                if(updateLocationService==null){
+                    tryActivateLocation();
+                }else{
+                    stopLocationService();
+                }
+                return true;
             case R.id.action_settings:
                 //startActivity(new Intent(this, SettingsActivity.class));
                 return true;
             default:
+                Log.d(TAG, "Outra chosa");
                 return false;
         }
     }
 
     // Para que se llame desde una clase interior con un boton
     public void stopLocationService(){
-        if(updateLocationService!=null)
+        if(updateLocationService!=null) {
             stopService(updateLocationService);
+            updateLocationService=null;
+        }
+        showStopLocation();
+    }
+
+    private void showStopLocation(){
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        MenuItem ubi_serv = toolbar.getMenu().findItem(R.id.change_ubi_serv);
+        ubi_serv.setIcon(getDrawable(R.drawable.baseline_location_off_black_18dp));
+        Toast.makeText(getApplicationContext(), "Has dejado de compartir tu ubicacion", Toast.LENGTH_LONG).show();
+    }
+
+    private void showStartLocation(){
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        MenuItem ubi_serv = toolbar.getMenu().findItem(R.id.change_ubi_serv);
+        ubi_serv.setIcon(getDrawable(R.drawable.baseline_location_on_black_18dp));
+        Toast.makeText(getApplicationContext(), "Has empezado a compartir tu ubicacion", Toast.LENGTH_LONG).show();
     }
 
     public void exit(){
