@@ -1,6 +1,7 @@
 package es.uva.ubicate.data;
 
 import android.app.Activity;
+import android.content.Context;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -12,11 +13,17 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Executor;
 
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -66,8 +73,34 @@ public class LoginDataSource {
                 return new Result.Error(new IllegalArgumentException("Error de username"));
             }
         } catch (Exception e) {
-            Log.d(TAG, "Error en registro:" + e);
+            Log.d(TAG, "Error en login:" + e);
             return new Result.Error(new IOException("Error logging in", e));
+        }
+    }
+
+    public Result<LoggedInUser> loginGoogle(GoogleSignInAccount account){
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+        mAuth = FirebaseAuth.getInstance();
+
+        try {
+            String idToken = account.getIdToken();
+            AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
+            Task<AuthResult> task = mAuth.signInWithCredential(credential);
+            while(!task.isComplete()){}// Espera activa, no pasa nada pero ha de ser lanzado en background (si no falla si no hay conexion)
+            if (task.isSuccessful()) {
+                // Sign in success, update UI with the signed-in user's information
+                Log.d(TAG, "signInWithCredential:success");
+                FirebaseUser fUser = mAuth.getCurrentUser();
+                LoggedInUser usuario = new LoggedInUser(fUser.getUid(),fUser.getDisplayName());
+                return new Result.Success<>(usuario);
+            } else {
+                // If sign in fails, display a message to the user.
+                Log.w(TAG, "signInWithCredential:failure", task.getException());
+                return new Result.Error(new IllegalArgumentException("Error de login Google"));
+            }
+        }catch (Exception e) {
+            Log.d(TAG, "Error en login con Google:" + e);
+            return new Result.Error(new IOException("Error logging in con Google ", e));
         }
     }
 

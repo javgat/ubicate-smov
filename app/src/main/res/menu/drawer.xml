@@ -5,7 +5,7 @@
     <item
         android:id="@+id/change_ubi_serv"
         android:title="Activar/Desactivar servicio de ubicacion"
-        android:icon="@drawable/baseline_location_off_black_18dp"
+        android:icon="@drawable/baseline_location_on_black_18dp"
         app:showAsAction="ifRoom"
         /><!--??-->
     <item android:id="@+id/search"
