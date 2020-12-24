@@ -132,6 +132,8 @@ public class UpdateLocationService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        FusedLocationProviderClient fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+        fusedLocationProviderClient.removeLocationUpdates(locationCallback);
         Log.d( TAG, "onDestroyed" );
     }
 

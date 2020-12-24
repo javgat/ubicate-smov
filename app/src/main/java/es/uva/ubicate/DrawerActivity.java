@@ -169,6 +169,7 @@ public class DrawerActivity extends AppCompatActivity {
                         break;
                     case Activity.RESULT_CANCELED:
                         // The user was asked to change settings, but chose not to
+                        showStopLocation();
                         exit();
                         break;
                     default:
@@ -229,7 +230,7 @@ public class DrawerActivity extends AppCompatActivity {
                 //startActivity(new Intent(this, SettingsActivity.class));
                 return true;
             default:
-                Log.d(TAG, "Outra chosa");
+                Log.d(TAG, "Otra cosa");
                 return false;
         }
     }
@@ -246,14 +247,16 @@ public class DrawerActivity extends AppCompatActivity {
     private void showStopLocation(){
         Toolbar toolbar = findViewById(R.id.toolbar);
         MenuItem ubi_serv = toolbar.getMenu().findItem(R.id.change_ubi_serv);
-        ubi_serv.setIcon(getDrawable(R.drawable.baseline_location_off_black_18dp));
+        if(ubi_serv!=null)
+            ubi_serv.setIcon(getDrawable(R.drawable.baseline_location_off_black_18dp));
         Toast.makeText(getApplicationContext(), "Has dejado de compartir tu ubicacion", Toast.LENGTH_LONG).show();
     }
 
     private void showStartLocation(){
         Toolbar toolbar = findViewById(R.id.toolbar);
         MenuItem ubi_serv = toolbar.getMenu().findItem(R.id.change_ubi_serv);
-        ubi_serv.setIcon(getDrawable(R.drawable.baseline_location_on_black_18dp));
+        if(ubi_serv!=null)
+            ubi_serv.setIcon(getDrawable(R.drawable.baseline_location_on_black_18dp));
         Toast.makeText(getApplicationContext(), "Has empezado a compartir tu ubicacion", Toast.LENGTH_LONG).show();
     }
 

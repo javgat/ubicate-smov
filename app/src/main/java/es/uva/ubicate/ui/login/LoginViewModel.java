@@ -8,6 +8,9 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.util.Patterns;
 
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+
 import java.util.HashMap;
 
 import es.uva.ubicate.data.LoginRepository;
@@ -65,6 +68,30 @@ public class LoginViewModel extends ViewModel {
         } else {
             loginResult.setValue(new LoginResult(R.string.login_failed));
         }*/
+    }
+
+    private class LoginGoogleTask extends AsyncTask<GoogleSignInAccount, Void,  Result<LoggedInUser>> {
+
+        @Override
+        protected Result<LoggedInUser> doInBackground(GoogleSignInAccount... accounts) {
+            Result<LoggedInUser> result = loginRepository.loginGoogle(accounts[0]);
+            return result;
+        }
+
+        @Override
+        protected void onPostExecute(Result<LoggedInUser> result){
+            if (result instanceof Result.Success) {
+                LoggedInUser data = ((Result.Success<LoggedInUser>) result).getData();
+                loginResult.setValue(new LoginResult(new LoggedInUserView(data.getDisplayName())));
+            } else {
+                loginResult.setValue(new LoginResult(R.string.login_failed));
+            }
+        }
+    }
+
+
+    public void loginGoogle(GoogleSignInAccount account){
+        new LoginGoogleTask().execute(account);
     }
 
     // Modifica el LoginFormState para saber si los datos son validos
