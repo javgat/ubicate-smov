@@ -2,7 +2,12 @@ package es.uva.ubicate.ui.profile;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
@@ -27,20 +32,32 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+
+import java.io.ByteArrayOutputStream;
 
 import es.uva.ubicate.DrawerActivity;
 import es.uva.ubicate.R;
 import es.uva.ubicate.persistence.FirebaseDAO;
 
+import static android.app.Activity.RESULT_OK;
+
 public class ProfileFragment extends Fragment {
 
     private final String TAG = "ProfileFragment";
+
+    private static final int PICK_IMAGE = 100;
+    private View raiz;
 
     private void updateValuesUI(View root){
         final TextView textName = root.findViewById(R.id.text_name);
@@ -217,59 +234,74 @@ public class ProfileFragment extends Fragment {
         dialog.show();
     }
 
-/*
-    private void updateValuesDB(View root){
+    private void openGallery() {
+        Intent gallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
+        startActivityForResult(gallery, PICK_IMAGE);
+    }
 
-        final EditText editName = root.findViewById(R.id.editTextPersonName);
-        final EditText editEmail = root.findViewById(R.id.editTextEmailAddress);
-        final EditText editPassword = root.findViewById(R.id.editTextPassword);
-        final FirebaseUser cUser = FirebaseAuth.getInstance().getCurrentUser();
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data){
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK && requestCode == PICK_IMAGE){
 
-        cUser.updateEmail(editEmail.getText().toString()).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                if (task.isSuccessful()) {
-                    Log.d(TAG, "User email address updated.");
+            final ProgressBar loadingProgressBar =  raiz.findViewById(R.id.loading_profile);
+            loadingProgressBar.setVisibility(View.VISIBLE);
+            FirebaseStorage storage = FirebaseStorage.getInstance();
+            StorageReference storageRef = storage.getReference();
+            StorageReference imagesRef = storageRef.child("images");
+            String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+            StorageReference profilePicture = imagesRef.child(uid+".jpg");
+
+
+            Uri imageUri = data.getData();
+            ImageView imageView = new ImageView(getContext());
+            imageView.setImageURI(imageUri);
+
+            //imageView.setDrawingCacheEnabled(true);
+            //imageView.buildDrawingCache();
+            Bitmap bitmap = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+            byte[] datas = baos.toByteArray();
+
+            UploadTask uploadTask = profilePicture.putBytes(datas);
+            uploadTask.addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                    Log.d(TAG, "Fallo en actualizar imagen" + exception.toString());
+                    Toast.makeText(getContext(), R.string.image_fail, Toast.LENGTH_LONG).show();
+                    loadingProgressBar.setVisibility(View.GONE);
                 }
-            }
-        });
-        cUser.updatePassword(editPassword.getText().toString()).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                if (task.isSuccessful()) {
-                    Log.d(TAG, "User password updated.");
+            }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    Log.d(TAG, "Exito 8) en actualizar imagen");
+                    Toast.makeText(getContext(), R.string.image_uploaded, Toast.LENGTH_LONG).show();
+                    updateUserDataDrawer();
+                    updateValuesUI(raiz);
+                    loadingProgressBar.setVisibility(View.GONE);
+                    // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
+                    // ...
                 }
-            }
-        });
-        UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
-                .setDisplayName(editName.getText().toString()).build();
+            });
 
-        cUser.updateProfile(profileUpdates)
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) {
-                            String updated = getString(R.string.updated_success);
-                            Log.d(TAG, "User profile updated.");
-                            Toast.makeText(getContext(), updated, Toast.LENGTH_LONG).show();
-                        }else{
-                            String updated = getString(R.string.updated_failure);
-                            Log.d(TAG, "User profile failed to update.");
-                            Toast.makeText(getContext(), updated, Toast.LENGTH_LONG).show();
-                        }
-                    }
-                });
-    }*/
+        }
+    }
+
+    private void tryEditarImage(View root){
+        openGallery();
+    }
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_profile, container, false);
-
+        raiz = root;
         final TextView textName = root.findViewById(R.id.text_name);
         final TextView textEmail = root.findViewById(R.id.text_email);
         final ImageView imageName = root.findViewById(R.id.image_edit_name);
         final ImageView imageEmail = root.findViewById(R.id.image_edit_email);
         final Button button_password = root.findViewById(R.id.button_update);
+        final Button button_image = root.findViewById(R.id.button_image_profile);
 
         updateValuesUI(root);
 
@@ -293,35 +325,13 @@ public class ProfileFragment extends Fragment {
                 tryEditarPassword(root);
             }
         });
-/*
-        // Actualiza el loginViewModel
-        TextWatcher afterTextChangedListener = new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                // ignore
-            }
 
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                // ignore
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                profileViewModel.profileDataChanged(editName.getText().toString(),
-                        editEmail.getText().toString(), editPassword.getText().toString());
-            }
-        };
-        editName.addTextChangedListener(afterTextChangedListener);
-        editEmail.addTextChangedListener(afterTextChangedListener);
-        editPassword.addTextChangedListener(afterTextChangedListener);
-
-        button_update.setOnClickListener(new View.OnClickListener() {
+        button_image.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                updateValuesDB(root);
+                tryEditarImage(root);
             }
-        });*/
+        });
 
         return root;
     }

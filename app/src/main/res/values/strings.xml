@@ -51,4 +51,6 @@
     <string name="dialog_edit_password">Introduce tu nueva contraseña</string>
     <string name="pass_cambiado">Contraseña actualizada</string>
     <string name="auth_failed">Imposible autenticar</string>
+    <string name="image_fail">Fallo al subir la imagen</string>
+    <string name="image_uploaded">Imagen actualizada correctamente</string>
 </resources>
