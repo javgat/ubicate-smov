@@ -11,12 +11,11 @@
         android:id="@+id/text_create_domain"
         android:layout_width="208dp"
         android:layout_height="29dp"
-        android:layout_marginTop="180dp"
+        android:layout_marginTop="56dp"
         android:text="@string/text_create_domain"
         android:textAlignment="center"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.507"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -49,14 +48,15 @@
         android:id="@+id/text_join_domain"
         android:layout_width="254dp"
         android:layout_height="28dp"
-        android:layout_marginTop="108dp"
+        android:layout_marginTop="36dp"
         android:text="@string/text_join_domain"
         android:textAlignment="center"
         android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button_create" />
+        app:layout_constraintTop_toBottomOf="@+id/button_create"
+        app:layout_constraintVertical_bias="0.008" />
 
     <EditText
         android:id="@+id/edit_join"
@@ -82,6 +82,6 @@
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/edit_join"
-        app:layout_constraintVertical_bias="0.153" />
+        app:layout_constraintVertical_bias="0.139" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
