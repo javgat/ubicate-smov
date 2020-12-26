@@ -23,7 +23,7 @@
     <string name="pr_password_title">Contraseña</string>
     <string name="pr_email_title">Email</string>
     <string name="pr_name_title">Nombre</string>
-    <string name="pr_update">Actualizar</string>
+    <string name="pr_update_pass">Cambiar contraseña</string>
     <string name="invalid_name">El nombre no puede estar vacío</string>
     <string name="updated_success">Perfil actualizado con éxito</string>
     <string name="updated_failure">Fallo al actualizar el perfil</string>
@@ -43,5 +43,12 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="prompt_name">Nombre de usuario</string>
     <string name="invalid_email">Email no valido</string>
-    <string name="invalid_password2">Password no coincide</string>
+    <string name="invalid_password2">Las contraseñas no coinciden</string>
+    <string name="dialog_edit_name">Introduce el nuevo nombre de usuario</string>
+    <string name="nombre_cambiado">Nombre cambiado con exito</string>
+    <string name="email_cambiado">Email cambiado con exito</string>
+    <string name="dialog_edit_email">Introduce tu nuevo email</string>
+    <string name="dialog_edit_password">Introduce tu nueva contraseña</string>
+    <string name="pass_cambiado">Contraseña actualizada</string>
+    <string name="auth_failed">Imposible autenticar</string>
 </resources>

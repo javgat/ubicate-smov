@@ -21,7 +21,7 @@ public class FirebaseDAO {
         mDatabase.child("usuario").child(uid).child("date").setValue(fecha.toString());
     }
 
-    public static void setName(String uid, String name){
+    public static void setName(String uid, String name) {
         DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
         mDatabase.child("usuario").child(uid).child("public_name").setValue(name);
     }
