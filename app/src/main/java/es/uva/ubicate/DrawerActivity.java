@@ -9,6 +9,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -20,6 +22,7 @@ import android.view.PointerIcon;
 import android.view.View;
 import android.view.Menu;
 import android.widget.CompoundButton;
+import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -35,6 +38,8 @@ import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
@@ -44,7 +49,10 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.view.menu.ActionMenuItemView;
@@ -75,9 +83,36 @@ public class DrawerActivity extends AppCompatActivity {
     public void updateUserDataDrawer(){
         TextView title = (TextView) findViewById(R.id.textTitleView);
         TextView textEmail = (TextView) findViewById(R.id.textView);
+        ImageView imageView = (ImageView) findViewById(R.id.imageView);
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         title.setText(currentUser.getDisplayName());
         textEmail.setText(currentUser.getEmail());
+
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference storageRef = storage.getReference();
+        String path = "images/"+FirebaseAuth.getInstance().getCurrentUser().getUid()+".jpg";
+        Log.d(TAG, path);
+        StorageReference pathReference = storageRef.child(path);
+        final long ONE_MEGABYTE = 1024 * 1024;
+        pathReference.getBytes(5*ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+            @Override
+            public void onSuccess(byte[] bytes) {
+                Log.d(TAG, "Si tiene imagen de perfil");
+                Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                int width = bitmap.getWidth();
+                int height = bitmap.getHeight();
+                if(width<height)
+                    height=width;
+                //int crop = (width - height) / 2;
+                Bitmap cropImg = Bitmap.createBitmap(bitmap, 0, 0, height, height);
+                imageView.setImageBitmap(cropImg);
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                Log.d(TAG, "No tiene imagen de perfil");
+            }
+        });
     }
 
     @Override
@@ -86,6 +121,17 @@ public class DrawerActivity extends AppCompatActivity {
         setContentView(R.layout.activity_drawer);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        // This callback will only be called when MyFragment is at least Started.
+        OnBackPressedCallback callback = new OnBackPressedCallback(true /* enabled by default */) {
+            @Override
+            public void handleOnBackPressed() {
+                Log.d(TAG, "Back pulsado, no deberia hacer nada");
+                // Handle the back button event
+            }
+        };
+        getOnBackPressedDispatcher().addCallback(this, callback);
+
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
