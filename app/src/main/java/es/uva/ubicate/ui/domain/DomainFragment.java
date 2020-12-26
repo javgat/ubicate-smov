@@ -13,10 +13,16 @@ import es.uva.ubicate.R;
 
 public class DomainFragment extends Fragment {
 
+    private void createNoEmpresa(View root){
+
+    }
+
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.fragment_domain, container, false);
+        int fragment = R.layout.fragment_domain;
+        View root = inflater.inflate(fragment, container, false);
         final TextView textView = root.findViewById(R.id.text_create_domain);
+        createNoEmpresa(root);
         //textView.setText("Organizacion no disponible");
         return root;
     }
