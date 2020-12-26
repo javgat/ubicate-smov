@@ -26,4 +26,24 @@ public class FirebaseDAO {
         mDatabase.child("usuario").child(uid).child("public_name").setValue(name);
     }
 
+    public static void creaEmpresa(String uid, String name){
+        DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
+        String key = mDatabase.child("empresa").push().getKey();
+        DatabaseReference mEmpresa = mDatabase.child("empresa").child(key);
+        mEmpresa.child("miembros").child(uid).setValue(true);
+        mEmpresa.child("nombre").setValue(name);
+
+        DatabaseReference mUser = mDatabase.child("usuario").child(uid);
+        mUser.child("empresa").setValue(key);
+    }
+
+    public static void joinEmpresa(String uid, String idEmpresa){
+        DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
+        DatabaseReference mEmpresa = mDatabase.child("empresa").child(idEmpresa);
+        mEmpresa.child("miembros").child(uid).setValue(false);
+
+        DatabaseReference mUsuario = mDatabase.child("usuario").child(uid);
+        mUsuario.child("empresa").setValue(idEmpresa);
+    }
+
 }
