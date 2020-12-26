@@ -57,7 +57,7 @@ public class DomainFragment extends Fragment {
                             }else if(!admin){
                                 changeFragment(new MemberFragment());
                             }else{
-                                //Aqui a adminFrament
+                                //Aqui a adminFragment
                             }
                         }
 
