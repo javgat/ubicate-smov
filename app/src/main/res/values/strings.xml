@@ -53,4 +53,5 @@
     <string name="auth_failed">Imposible autenticar</string>
     <string name="image_fail">Fallo al subir la imagen</string>
     <string name="image_uploaded">Imagen actualizada correctamente</string>
+    <string name="dialog_exit_domain">¿Quiere abandonar la organización?</string>
 </resources>

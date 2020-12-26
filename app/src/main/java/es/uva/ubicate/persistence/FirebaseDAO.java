@@ -46,4 +46,13 @@ public class FirebaseDAO {
         mUsuario.child("empresa").setValue(idEmpresa);
     }
 
+    public static void exitDomainMember(String uid, String idEmpresa){
+        DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
+        DatabaseReference mEmpresa = mDatabase.child("empresa").child(idEmpresa);
+        mEmpresa.child("miembros").child(uid).removeValue();
+
+        DatabaseReference mUsuario = mDatabase.child("usuario").child(uid);
+        mUsuario.child("empresa").removeValue();
+    }
+
 }
