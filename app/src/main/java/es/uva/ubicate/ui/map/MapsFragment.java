@@ -83,66 +83,95 @@ public class MapsFragment extends Fragment {
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     String empresaId = dataSnapshot.getValue(String.class);
                     Log.d(TAG, "Recibido datos de usuario, es de la empresa " + empresaId);
-                    mDatabase.child("empresa").child(empresaId).child("miembros").addChildEventListener(new ChildEventListener() {
-                        @Override
-                        public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                            String peer = snapshot.getKey();
-                            Log.d(TAG, "Recibido datos de empresa, miembro: " + peer);
-                            Marker markPeer = googleMap.addMarker(new MarkerOptions().position(vall).visible(false).title(peer));
+                    if(empresaId!=null) {//Si tiene empresa
+                        mDatabase.child("empresa").child(empresaId).child("miembros").addChildEventListener(new ChildEventListener() {
+                            @Override
+                            public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                                String peer = snapshot.getKey();
+                                Log.d(TAG, "Recibido datos de empresa, miembro: " + peer);
+                                Marker markPeer = googleMap.addMarker(new MarkerOptions().position(vall).visible(false).title(peer));
 
-                            mDatabase.child("usuario").child(peer).addValueEventListener(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                    Log.d(TAG, "Recibido datos de compa");
-                                    double latitude = snapshot.child("latitude").getValue(Double.class);
-                                    double longitude = snapshot.child("longitude").getValue(Double.class);
-                                    String date = snapshot.child("date").getValue(String.class);
-                                    Log.d(TAG, "El pibe está en " + latitude + " " + longitude);
-                                    Log.d(TAG, "Eso a las " + date);
-                                    LatLng peerLL = new LatLng(Double.valueOf(latitude), Double.valueOf(longitude));
-                                    markPeer.setPosition(peerLL);
+                                mDatabase.child("usuario").child(peer).addValueEventListener(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                        Log.d(TAG, "Recibido datos de compa");
+                                        double latitude = snapshot.child("latitude").getValue(Double.class);
+                                        double longitude = snapshot.child("longitude").getValue(Double.class);
+                                        String date = snapshot.child("date").getValue(String.class);
+                                        Log.d(TAG, "El pibe está en " + latitude + " " + longitude);
+                                        Log.d(TAG, "Eso a las " + date);
+                                        LatLng peerLL = new LatLng(Double.valueOf(latitude), Double.valueOf(longitude));
+                                        markPeer.setPosition(peerLL);
 
-                                    if(peer.equals(mAuth.getUid())){
-                                        markPeer.setTitle("Tu ubicacion");
-                                        markPeer.setSnippet("¡Este eres tú!");
-                                        if(!markPeer.isVisible())//la primera vez no es visible, asi que no se mueve el zoom every time
-                                            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(peerLL, ZOOM_CAMERA));
-                                    }else{
-                                        markPeer.setTitle(snapshot.child("public_name").getValue(String.class));
-                                        markPeer.setSnippet(date);
+                                        if (peer.equals(mAuth.getUid())) {
+                                            markPeer.setTitle("Tu ubicacion");
+                                            markPeer.setSnippet("¡Este eres tú!");
+                                            if (!markPeer.isVisible())//la primera vez no es visible, asi que no se mueve el zoom every time
+                                                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(peerLL, ZOOM_CAMERA));
+                                        } else {
+                                            markPeer.setTitle(snapshot.child("public_name").getValue(String.class));
+                                            markPeer.setSnippet(date);
+                                        }
+                                        markPeer.setVisible(true);
                                     }
-                                    markPeer.setVisible(true);
-                                }
 
-                                @Override
-                                public void onCancelled(@NonNull DatabaseError error) {
-                                    Log.d(TAG, "Error al acceder a los datos de " + peer + ", cual es su ubicacion " + error);
-                                }
-                            });
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError error) {
+                                        Log.d(TAG, "Error al acceder a los datos de " + peer + ", cual es su ubicacion " + error);
+                                    }
+                                });
 
-                        }
+                            }
 
-                        @Override
-                        public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                            @Override
+                            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
 
-                        }
+                            }
 
-                        @Override
-                        public void onChildRemoved(@NonNull DataSnapshot snapshot) {
+                            @Override
+                            public void onChildRemoved(@NonNull DataSnapshot snapshot) {
 
-                        }
+                            }
 
-                        @Override
-                        public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                            @Override
+                            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
 
-                        }
+                            }
 
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError error) {
-                            Log.d(TAG, "Error al acceder a los datos de la empresa, cuales son sus usuarios " + error);
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+                                Log.d(TAG, "Error al acceder a los datos de la empresa, cuales son sus usuarios " + error);
 
-                        }
-                    });
+                            }
+                        });
+                    }else{
+                        String uid = mAuth.getUid();
+                        Marker markPeer = googleMap.addMarker(new MarkerOptions().position(vall).visible(false).title(uid));
+
+                        mDatabase.child("usuario").child(uid).addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                Log.d(TAG, "Recibido datos propios");
+                                double latitude = snapshot.child("latitude").getValue(Double.class);
+                                double longitude = snapshot.child("longitude").getValue(Double.class);
+                                String date = snapshot.child("date").getValue(String.class);
+                                Log.d(TAG, "El pibe está en " + latitude + " " + longitude);
+                                Log.d(TAG, "Eso a las " + date);
+                                LatLng peerLL = new LatLng(Double.valueOf(latitude), Double.valueOf(longitude));
+                                markPeer.setPosition(peerLL);
+                                markPeer.setTitle("Tu ubicacion");
+                                markPeer.setSnippet("¡Este eres tú!");
+                                if (!markPeer.isVisible())//la primera vez no es visible, asi que no se mueve el zoom every time
+                                    googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(peerLL, ZOOM_CAMERA));
+                                markPeer.setVisible(true);
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+                                Log.d(TAG, "Error al acceder a los datos de " + uid + ", cual es su ubicacion " + error);
+                            }
+                        });
+                    }
                 }
 
                 @Override

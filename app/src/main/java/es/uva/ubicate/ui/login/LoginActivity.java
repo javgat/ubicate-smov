@@ -61,6 +61,7 @@ public class LoginActivity extends AppCompatActivity {
         final Button loginButton = findViewById(R.id.login);
         final ProgressBar loadingProgressBar = findViewById(R.id.loading);
         final SignInButton signInButton = findViewById(R.id.sign_in_button_google);
+        final Button registerButton = findViewById(R.id.go_register_button);
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
@@ -155,6 +156,18 @@ public class LoginActivity extends AppCompatActivity {
                 signIn();
             }
         });
+
+        registerButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                goRegister();
+            }
+        });
+    }
+
+    private void goRegister(){
+        Intent regAct = new Intent(this, RegisterActivity.class);
+        startActivity(regAct);
     }
 
     private void signIn(){
