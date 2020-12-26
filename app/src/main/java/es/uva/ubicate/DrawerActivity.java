@@ -72,7 +72,7 @@ public class DrawerActivity extends AppCompatActivity {
 
     private String TAG = "DrawerActivity";
 
-    private void updateUserDataDrawer(){
+    public void updateUserDataDrawer(){
         TextView title = (TextView) findViewById(R.id.textTitleView);
         TextView textEmail = (TextView) findViewById(R.id.textView);
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();

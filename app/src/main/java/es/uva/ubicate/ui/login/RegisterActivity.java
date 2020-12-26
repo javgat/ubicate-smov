@@ -19,6 +19,7 @@ import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -42,6 +43,7 @@ public class RegisterActivity extends AppCompatActivity {
         final EditText editEmail = findViewById(R.id.register_email);
         final EditText editPass = findViewById(R.id.register_password);
         final EditText editPass2 = findViewById(R.id.register_password2);
+        final ProgressBar loadingProgressBar = findViewById(R.id.loading_reg);
         final Button registerButton = findViewById(R.id.register_button);
 
         loginViewModel = new ViewModelProvider(this, new LoginViewModelFactory())
@@ -77,6 +79,7 @@ public class RegisterActivity extends AppCompatActivity {
                 if (loginResult == null) {
                     return;
                 }
+                loadingProgressBar.setVisibility(View.GONE);
                 if (loginResult.getError() != null) {
                     showRegisterFailed(loginResult.getError());
                 }
@@ -126,10 +129,11 @@ public class RegisterActivity extends AppCompatActivity {
             }
         });
 
-        // pulsa login button
+        // pulsa register button
         registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                loadingProgressBar.setVisibility(View.VISIBLE);
                 loginViewModel.register(editName.getText().toString(),
                         editEmail.getText().toString(),
                         editPass.getText().toString());
