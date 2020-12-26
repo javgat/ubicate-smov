@@ -64,4 +64,12 @@ public class LoginRepository {
         }
         return result;
     }
+
+    public Result<LoggedInUser> register(String name, String email, String password){
+        Result<LoggedInUser> result = dataSource.register(name, email, password);
+        if (result instanceof Result.Success) {
+            setLoggedInUser(((Result.Success<LoggedInUser>) result).getData());
+        }
+        return result;
+    }
 }

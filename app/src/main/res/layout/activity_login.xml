@@ -95,7 +95,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.503"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button"
+        app:layout_constraintTop_toBottomOf="@+id/go_register_button"
         app:srcCompat="@drawable/logo_app" />
 
     <com.google.android.gms.common.SignInButton
@@ -109,7 +109,7 @@
         app:layout_constraintTop_toBottomOf="@+id/login" />
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/go_register_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
