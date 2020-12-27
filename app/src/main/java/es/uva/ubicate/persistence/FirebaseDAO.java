@@ -67,4 +67,25 @@ public class FirebaseDAO {
         mMiembro.setValue(true);
 
     }
+
+    public static void crearJoinCode(String idEmpresa, String mensaje) {
+        DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
+        DatabaseReference mEmpresa = mDatabase.child("empresa").child(idEmpresa);
+        mEmpresa.child("join_empresa").setValue(mensaje);
+        mDatabase.child("join_empresa").child(mensaje).setValue(idEmpresa);
+
+    }
+
+    public static void borrarCodigo(String idEmpresa, String mensaje) {
+        DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
+        DatabaseReference mEmpresa = mDatabase.child("empresa").child(idEmpresa);
+        mEmpresa.child("join_empresa").removeValue();
+        mDatabase.child("join_empresa").child(mensaje).removeValue();
+    }
+
+    public static void changeDomainName(String idEmpresa, String nombre) {
+        DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
+        DatabaseReference mEmpresa = mDatabase.child("empresa").child(idEmpresa);
+        mEmpresa.child("nombre").setValue(nombre);
+    }
 }

@@ -6,7 +6,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="horizontal"
-    android:gravity="center">
+    android:gravity="center"
+    android:padding="7dp">
 
     <ImageView
         android:id="@+id/image_member"
@@ -36,7 +37,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="0"
-        android:text="Admin" />
+        android:text="Hacer\nAdmin" />
 
     <!-- Cambiar por una imagen de una X -->
     <Button
