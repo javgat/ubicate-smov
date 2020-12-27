@@ -10,14 +10,18 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.provider.ContactsContract;
+import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -170,10 +174,77 @@ public class AdminDomainFragment extends Fragment {
         dialog.show();
     }
 
+    private void crearJoinCode(String idEmpresa, String mensaje){
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+        databaseReference.child("join_empresa").child(mensaje).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if(snapshot.exists()){
+                    Toast.makeText(getContext(), R.string.join_code_exists, Toast.LENGTH_LONG).show();
+                }else{
+                    FirebaseDAO.crearJoinCode(idEmpresa, mensaje);
+                    reloadDomain();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
+    private void tryCrearCode(String idEmpresa){
+        EditText input = new EditText(getContext());
+        input.setInputType(InputType.TYPE_CLASS_TEXT );
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setMessage(R.string.dialog_input_code_domain)
+                .setView(input)
+                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        crearJoinCode(idEmpresa, input.getText().toString());
+                    }
+                })
+                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // User cancelled the dialog
+                    }
+                });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    private void tryChangeDomainName(String idEmpresa){
+        EditText input = new EditText(getContext());
+        input.setInputType(InputType.TYPE_CLASS_TEXT );
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setMessage(R.string.dialog_change_domain_name)
+                .setView(input)
+                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        FirebaseDAO.changeDomainName(idEmpresa, input.getText().toString());
+                        reloadDomain();
+                    }
+                })
+                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // User cancelled the dialog
+                    }
+                });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
 
     private void updateValuesView(View root){
         TextView text_nombre_empresa = root.findViewById(R.id.domain_member_title);
         Button button_exit = root.findViewById(R.id.button_exit_member);
+
+        TextView code_empresa = root.findViewById(R.id.text_code_admin);
+        Button button_code = root.findViewById(R.id.button_code_admin);
+
+        final ImageView image_name = root.findViewById(R.id.image_edit_name_domain);
+
         button_exit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -236,8 +307,47 @@ public class AdminDomainFragment extends Fragment {
 
                         }
                     });
+
+                    mDatabase.child("empresa").child(idEmpresa).child("join_empresa").addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            if(snapshot.exists()){//Con codigo
+                                String codigo = snapshot.getValue(String.class);
+                                code_empresa.setText("Codigo: "+codigo);
+                                code_empresa.setVisibility(View.VISIBLE);
+                                button_code.setText(R.string.delete_code_domain);
+                                button_code.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        FirebaseDAO.borrarCodigo(idEmpresa, codigo);
+                                        reloadDomain();
+                                    }
+                                });
+                            }else{//Sin codigo
+                                button_code.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        tryCrearCode(idEmpresa);
+                                    }
+                                });
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+
+                        }
+                    });
                 }
+
+                image_name.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        tryChangeDomainName(idEmpresa);
+                    }
+                });
             }
+
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {

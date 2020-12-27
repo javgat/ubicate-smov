@@ -55,4 +55,8 @@
     <string name="image_uploaded">Imagen actualizada correctamente</string>
     <string name="dialog_exit_domain">¿Quiere abandonar la organización?</string>
     <string name="dialog_exit_domain_admin">¿Quiere salir de la empresa? Si no hay más miembros se eliminará, si sí hay se hará un administrador al azar si no existe otro.</string>
+    <string name="delete_code_domain">Borrar\nCodigo</string>
+    <string name="dialog_input_code_domain">Introduzca el nuevo código de unión a la organización</string>
+    <string name="join_code_exists">El codigo de unión ya está siendo utilizado</string>
+    <string name="dialog_change_domain_name">Introduzca el nuevo nombre de la empresa</string>
 </resources>
