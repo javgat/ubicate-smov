@@ -1,6 +1,8 @@
 package es.uva.ubicate.ui.domain;
 
 import android.content.DialogInterface;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -15,10 +17,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -26,6 +31,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import org.w3c.dom.Text;
 
@@ -47,7 +54,36 @@ public class MemberFragment extends Fragment {
         CardView card = new CardView(getContext());
         TextView texto = new TextView(getContext());
         texto.setText(nombre);
+        texto.setTextSize(18);
         card.addView(texto);
+        card.setContentPadding(20, 10, 20, 10);
+
+        ImageView imageView = new ImageView(getContext());
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference storageRef = storage.getReference();
+        Log.d(TAG, url);
+        StorageReference pathReference = storageRef.child(url);
+        final long ONE_MEGABYTE = 1024 * 1024;
+        pathReference.getBytes(5*ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+            @Override
+            public void onSuccess(byte[] bytes) {
+                Log.d(TAG, "Si tiene imagen de perfil");
+                Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                int width = bitmap.getWidth();
+                int height = bitmap.getHeight();
+                if(width<height)
+                    height=width;
+                //int crop = (width - height) / 2;
+                Bitmap cropImg = Bitmap.createBitmap(bitmap, 0, 0, height, height);
+                imageView.setImageBitmap(cropImg);
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                Log.d(TAG, "No tiene imagen de perfil");
+            }
+        });
+        card.addView(imageView);
         return card;
     }
 
