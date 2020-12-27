@@ -55,4 +55,16 @@ public class FirebaseDAO {
         mUsuario.child("empresa").removeValue();
     }
 
+    public static void deleteDomain(String idEmpresa) {
+        DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
+        DatabaseReference mEmpresa = mDatabase.child("empresa").child(idEmpresa);
+        mEmpresa.removeValue();
+    }
+
+    public static void setAdmin(String idEmpresa, String id) {
+        DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
+        DatabaseReference mMiembro = mDatabase.child("empresa").child(idEmpresa).child("miembros").child(id);
+        mMiembro.setValue(true);
+
+    }
 }

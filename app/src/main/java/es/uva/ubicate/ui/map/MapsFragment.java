@@ -95,24 +95,28 @@ public class MapsFragment extends Fragment {
                                     @Override
                                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                                         Log.d(TAG, "Recibido datos de compa");
-                                        double latitude = snapshot.child("latitude").getValue(Double.class);
-                                        double longitude = snapshot.child("longitude").getValue(Double.class);
-                                        String date = snapshot.child("date").getValue(String.class);
-                                        Log.d(TAG, "El pibe está en " + latitude + " " + longitude);
-                                        Log.d(TAG, "Eso a las " + date);
-                                        LatLng peerLL = new LatLng(Double.valueOf(latitude), Double.valueOf(longitude));
-                                        markPeer.setPosition(peerLL);
+                                        Double latD = snapshot.child("latitude").getValue(Double.class);
+                                        Double longD = snapshot.child("longitude").getValue(Double.class);
+                                        if(latD!=null && longD!=null) {
+                                            double latitude = latD;
+                                            double longitude = longD;
+                                            String date = snapshot.child("date").getValue(String.class);
+                                            Log.d(TAG, "El pibe está en " + latitude + " " + longitude);
+                                            Log.d(TAG, "Eso a las " + date);
+                                            LatLng peerLL = new LatLng(Double.valueOf(latitude), Double.valueOf(longitude));
+                                            markPeer.setPosition(peerLL);
 
-                                        if (peer.equals(mAuth.getUid())) {
-                                            markPeer.setTitle("Tu ubicacion");
-                                            markPeer.setSnippet("¡Este eres tú!");
-                                            if (!markPeer.isVisible())//la primera vez no es visible, asi que no se mueve el zoom every time
-                                                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(peerLL, ZOOM_CAMERA));
-                                        } else {
-                                            markPeer.setTitle(snapshot.child("public_name").getValue(String.class));
-                                            markPeer.setSnippet(date);
+                                            if (peer.equals(mAuth.getUid())) {
+                                                markPeer.setTitle("Tu ubicacion");
+                                                markPeer.setSnippet("¡Este eres tú!");
+                                                if (!markPeer.isVisible())//la primera vez no es visible, asi que no se mueve el zoom every time
+                                                    googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(peerLL, ZOOM_CAMERA));
+                                            } else {
+                                                markPeer.setTitle(snapshot.child("public_name").getValue(String.class));
+                                                markPeer.setSnippet(date);
+                                            }
+                                            markPeer.setVisible(true);
                                         }
-                                        markPeer.setVisible(true);
                                     }
 
                                     @Override
