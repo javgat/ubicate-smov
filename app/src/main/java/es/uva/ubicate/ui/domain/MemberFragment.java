@@ -50,15 +50,12 @@ public class MemberFragment extends Fragment {
         ft.commit();
     }
 
-    private View createMemberCard(String nombre, String url){
-        CardView card = new CardView(getContext());
-        TextView texto = new TextView(getContext());
+    private View createMemberCard(String nombre, String url, boolean esAdmin){
+        View memberView = getLayoutInflater().inflate(R.layout.domain_member, null);
+        TextView texto = memberView.findViewById(R.id.nombre_member);
         texto.setText(nombre);
-        texto.setTextSize(18);
-        card.addView(texto);
-        card.setContentPadding(20, 10, 20, 10);
 
-        ImageView imageView = new ImageView(getContext());
+        ImageView imageView = memberView.findViewById(R.id.image_member);
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReference();
         Log.d(TAG, url);
@@ -83,8 +80,19 @@ public class MemberFragment extends Fragment {
                 Log.d(TAG, "No tiene imagen de perfil");
             }
         });
-        card.addView(imageView);
-        return card;
+
+        if(!esAdmin){
+            ImageView adminCheck = memberView.findViewById(R.id.admin_member);
+            adminCheck.setVisibility(View.INVISIBLE);
+        }
+
+        Button button_admin = memberView.findViewById(R.id.button_admin_member);
+        Button button_expulsar = memberView.findViewById(R.id.button_delete_member);
+
+        button_admin.setVisibility(View.GONE);
+        button_expulsar.setVisibility(View.GONE);
+
+        return memberView;
     }
 
     private void exitDomain(){
@@ -169,12 +177,13 @@ public class MemberFragment extends Fragment {
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
                             for(DataSnapshot childSnap : snapshot.getChildren()) {
                                 String memberId = childSnap.getKey();
+                                Boolean es_admin = childSnap.getValue(Boolean.class);
                                 mDatabase.child("usuario").child(memberId).child("public_name").addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                                         String nombre = snapshot.getValue(String.class);
                                         String url = "images/"+memberId+".jpg";
-                                        View memberCard = createMemberCard(nombre, url);
+                                        View memberCard = createMemberCard(nombre, url, es_admin.booleanValue());
                                         linearScroll.addView(memberCard);
                                     }
 

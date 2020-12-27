@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    android:gravity="center">
+
+    <ImageView
+        android:id="@+id/image_member"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_weight="0"
+        tools:srcCompat="@tools:sample/avatars" />
+
+    <TextView
+        android:id="@+id/nombre_member"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="Nombre"
+        android:textAlignment="center"
+        android:textSize="20dp" />
+
+    <ImageView
+        android:id="@+id/admin_member"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="0"
+        app:srcCompat="@drawable/baseline_grade_black_18dp" />
+
+    <Button
+        android:id="@+id/button_admin_member"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="0"
+        android:text="Admin" />
+
+    <!-- Cambiar por una imagen de una X -->
+    <Button
+        android:id="@+id/button_delete_member"
+        android:layout_width="42dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0"
+        android:backgroundTint="@android:color/holo_red_dark"
+        android:text="X"
+        android:textAlignment="center"
+        app:strokeColor="#FFFFFF" />
+</LinearLayout>
