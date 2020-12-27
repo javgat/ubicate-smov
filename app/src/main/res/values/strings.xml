@@ -54,4 +54,5 @@
     <string name="image_fail">Fallo al subir la imagen</string>
     <string name="image_uploaded">Imagen actualizada correctamente</string>
     <string name="dialog_exit_domain">¿Quiere abandonar la organización?</string>
+    <string name="dialog_exit_domain_admin">¿Quiere salir de la empresa? Si no hay más miembros se eliminará, si sí hay se hará un administrador al azar si no existe otro.</string>
 </resources>
