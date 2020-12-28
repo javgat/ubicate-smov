@@ -34,9 +34,12 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 import es.uva.ubicate.R;
 import es.uva.ubicate.data.model.Evento;
@@ -148,10 +151,17 @@ public class HomeMemberFragment extends Fragment{
                             });
                         }
                         Iterable<DataSnapshot> eventosSnap = snapshot.child("eventos").getChildren();
+                        List<Evento> eventos = new ArrayList<>();
                         for(DataSnapshot eventoSnap : eventosSnap){
                             Evento evento = eventoSnap.getValue(Evento.class);
                             String idEvento = eventoSnap.getKey();
-                            View eventoView = createEventoView(evento, esAdmin, idEmpresa, idEvento);
+                            evento.setIdEvento(idEvento);
+                            eventos.add(evento);
+                        }
+                        Collections.sort(eventos);
+                        for(Evento event : eventos){
+                            String idEvento = event.getIdEvento();
+                            View eventoView = createEventoView(event, esAdmin, idEmpresa, idEvento);
                             linearLayout.addView(eventoView);
                         }
                     }
