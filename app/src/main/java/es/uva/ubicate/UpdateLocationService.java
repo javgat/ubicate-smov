@@ -46,10 +46,6 @@ import es.uva.ubicate.persistence.FirebaseDAO;
 /**
  * An {@link IntentService} subclass for handling asynchronous task requests in
  * a service on a separate handler thread.
- * <p>
- * <p>
- * TODO: Customize class - update intent actions, extra parameters and static
- * helper methods.
  */
 public class UpdateLocationService extends Service {
 
