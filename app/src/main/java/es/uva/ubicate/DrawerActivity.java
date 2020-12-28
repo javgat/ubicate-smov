@@ -16,13 +16,16 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.text.InputType;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.PointerIcon;
 import android.view.View;
 import android.view.Menu;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -47,6 +50,7 @@ import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
@@ -70,6 +74,8 @@ import androidx.appcompat.widget.Toolbar;
 import java.util.Calendar;
 import java.util.Date;
 
+import es.uva.ubicate.persistence.FirebaseDAO;
+
 public class DrawerActivity extends AppCompatActivity {
 
     private AppBarConfiguration mAppBarConfiguration;
@@ -77,6 +83,7 @@ public class DrawerActivity extends AppCompatActivity {
     private Intent updateLocationService;
 
     protected static final int REQUEST_CHECK_SETTINGS = 0x1;
+    private static final int REQ_LOCATION = 201;
 
     private String TAG = "DrawerActivity";
 
@@ -157,7 +164,55 @@ public class DrawerActivity extends AppCompatActivity {
 
     }
 
+    private void noLocation(){
+        Log.d(TAG, "Pues nada no hay ubicacion :(");
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                                           int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);//???
+        switch (requestCode) {
+            case REQ_LOCATION:
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0 &&
+                        grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    tryActivateLocation();
+                } else {
+                    Toast.makeText(getApplicationContext(), R.string.location_no_allowed, Toast.LENGTH_LONG).show();
+                    noLocation();
+                }
+                return;
+        }
+        // Other 'case' lines to check for other
+        // permissions this app might request.
+    }
+
+    private void showRationaleLocation(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        Activity activity = this;
+        builder.setMessage(R.string.dialog_rationale_location)
+                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.ACCESS_FINE_LOCATION},REQ_LOCATION);//??
+                    }
+                });
+        // Create the AlertDialog object and return it
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
     private void tryActivateLocation(){
+        if(ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION)== PackageManager.PERMISSION_DENIED){
+            if(shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION))
+                showRationaleLocation();
+            else
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION},REQ_LOCATION);//??
+        }else
+            tryActivateLocationAllowed();
+    }
+
+    private void tryActivateLocationAllowed(){
         if(locationRequest==null)
             locationRequest = createLocationRequest();
         LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
@@ -194,7 +249,7 @@ public class DrawerActivity extends AppCompatActivity {
                             break;
                         case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
                             Log.d(TAG, "Settings change unavailable");
-                            exit();
+                            noLocation();
                             break;
                     }
                 }
@@ -205,18 +260,18 @@ public class DrawerActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        final LocationSettingsStates states = LocationSettingsStates.fromIntent(data);
         switch (requestCode) {
             case REQUEST_CHECK_SETTINGS:
                 switch (resultCode) {
                     case Activity.RESULT_OK:
+                        final LocationSettingsStates states = LocationSettingsStates.fromIntent(data);
                         // All required changes were successfully made
                         launchUpdateLocationService();
                         break;
                     case Activity.RESULT_CANCELED:
                         // The user was asked to change settings, but chose not to
                         showStopLocation();
-                        exit();
+                        noLocation();
                         break;
                     default:
                         break;

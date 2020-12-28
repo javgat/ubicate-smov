@@ -61,6 +61,8 @@ dependencies {
 
     implementation 'com.google.android.gms:play-services-auth:19.0.0'
 
+    def activity_version = "1.2.0-rc01"//Dice que 1.2.0 deberia
+    implementation "androidx.activity:activity:$activity_version"
 
 
     //implementation 'com.google.android.gms:play-services-base:17.5.0  '
