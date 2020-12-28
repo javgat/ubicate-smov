@@ -59,4 +59,7 @@
     <string name="dialog_input_code_domain">Introduzca el nuevo código de unión a la organización</string>
     <string name="join_code_exists">El codigo de unión ya está siendo utilizado</string>
     <string name="dialog_change_domain_name">Introduzca el nuevo nombre de la empresa</string>
+    <string name="almacenamiento_no_activa">No se puede acceder al almacenamiento si no concedes autorización</string>
+    <string name="location_no_allowed">No se podrá compartir la ubicación si no se permite el acceso a ella</string>
+    <string name="dialog_rationale_location">Queremos usar la ubicación para compartirla con tus compañeros de organización.\nPara ello necesitamos que permitas el acceso de la app a la ubicación.\nPuedes desactivar el servicio en cualquier momento desde la app en el icono de ubicación de la barra superior, o desactivando tu ubicación.</string>
 </resources>
