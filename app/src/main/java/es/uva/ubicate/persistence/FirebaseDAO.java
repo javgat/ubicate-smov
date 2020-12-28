@@ -13,6 +13,8 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.Calendar;
 import java.util.Date;
 
+import es.uva.ubicate.data.model.Evento;
+
 public class FirebaseDAO {
     public static void setLocation(String uid, LatLng locUser, Date fecha){
         DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
@@ -87,5 +89,18 @@ public class FirebaseDAO {
         DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
         DatabaseReference mEmpresa = mDatabase.child("empresa").child(idEmpresa);
         mEmpresa.child("nombre").setValue(nombre);
+    }
+
+    public static void borrarEvento(String idEmpresa, String idEvento) {
+        DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
+        DatabaseReference mEmpresa = mDatabase.child("empresa").child(idEmpresa);
+        mEmpresa.child("eventos").child(idEvento).removeValue();
+    }
+
+    public static void addEvento(String idEmpresa, Evento evento) {
+        DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
+        DatabaseReference mEmpresa = mDatabase.child("empresa").child(idEmpresa);
+        String key = mEmpresa.child("eventos").push().getKey();
+        mEmpresa.child("eventos").child(key).setValue(evento);
     }
 }

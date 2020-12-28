@@ -62,4 +62,8 @@
     <string name="almacenamiento_no_activa">No se puede acceder al almacenamiento si no concedes autorización</string>
     <string name="location_no_allowed">No se podrá compartir la ubicación si no se permite el acceso a ella</string>
     <string name="dialog_rationale_location">Queremos usar la ubicación para compartirla con tus compañeros de organización.\nPara ello necesitamos que permitas el acceso de la app a la ubicación.\nPuedes desactivar el servicio en cualquier momento desde la app en el icono de ubicación de la barra superior, o desactivando tu ubicación.</string>
+    <string name="text_home_no_domain">Necesitas unirte a una organización para tener Eventos</string>
+    <string name="add_event">Crear evento</string>
+    <string name="dialog_new_event">Introduce los datos del nuevo evento</string>
+    <string name="next">Siguiente</string>
 </resources>
