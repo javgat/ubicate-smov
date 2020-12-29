@@ -7,7 +7,8 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:gravity="right"
-    android:padding="7dp">
+    android:padding="7dp"
+    android:background="@drawable/border">
     <TextView
         android:id="@+id/autor_mensaje"
         android:layout_width="wrap_content"
@@ -35,5 +36,5 @@
         android:layout_weight="1"
         android:text="Fecha"
         android:gravity="left"
-        android:textSize="16dp" />
+        android:textSize="14dp" />
 </LinearLayout>
