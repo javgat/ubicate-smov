@@ -66,4 +66,5 @@
     <string name="add_event">Crear evento</string>
     <string name="dialog_new_event">Introduce los datos del nuevo evento</string>
     <string name="next">Siguiente</string>
+    <string name="dialog_delete_image">¿Desea borrar la imagen de perfil?</string>
 </resources>

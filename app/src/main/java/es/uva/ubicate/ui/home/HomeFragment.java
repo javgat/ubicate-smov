@@ -42,7 +42,13 @@ public class HomeFragment extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if(snapshot.exists()){
-                    changeFragment(new HomeMemberFragment());
+                    root.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            changeFragment(new HomeMemberFragment());
+                        }
+                    });
+
                 }else{
                     final TextView textView = root.findViewById(R.id.text_home);
                     textView.setVisibility(View.VISIBLE);

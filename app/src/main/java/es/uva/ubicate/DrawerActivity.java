@@ -14,14 +14,18 @@ import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.media.Image;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.text.InputType;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.PointerIcon;
 import android.view.View;
 import android.view.Menu;
+import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -57,6 +61,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import androidx.activity.OnBackPressedCallback;
+import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.view.menu.ActionMenuItemView;
@@ -87,7 +92,12 @@ public class DrawerActivity extends AppCompatActivity {
 
     private String TAG = "DrawerActivity";
 
+    private void setDefault(ImageView imageView){
+        imageView.setImageDrawable(getDrawable(R.mipmap.ic_launcher_round));
+    }
+
     public void updateUserDataDrawer(){
+
         TextView title = (TextView) findViewById(R.id.textTitleView);
         TextView textEmail = (TextView) findViewById(R.id.textView);
         ImageView imageView = (ImageView) findViewById(R.id.imageView);
@@ -98,7 +108,17 @@ public class DrawerActivity extends AppCompatActivity {
         FirebaseStorage storage = FirebaseStorage.getInstance();
         String path = "images/"+FirebaseAuth.getInstance().getCurrentUser().getUid()+".jpg";
         Log.d(TAG, path);
-        FirebaseDAO.downloadImage(imageView, storage, path, TAG);
+        FirebaseDAO.existsImage(storage, path).addOnSuccessListener(new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(Uri uri) {
+                FirebaseDAO.downloadImage(imageView, storage, path, TAG);
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                setDefault(imageView);
+            }
+        });
     }
 
     @Override
@@ -118,6 +138,7 @@ public class DrawerActivity extends AppCompatActivity {
         };
         getOnBackPressedDispatcher().addCallback(this, callback);
 
+        /*
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -126,7 +147,7 @@ public class DrawerActivity extends AppCompatActivity {
                 Snackbar.make(view, "Añadir evento aún no disponible", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
-        });
+        });*/
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
         // Passing each menu ID as a set of Ids because each
@@ -139,7 +160,13 @@ public class DrawerActivity extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
 
-        tryActivateLocation();
+        drawer.findViewById(R.id.nav_view).getRootView().post(new Runnable() {
+            @Override
+            public void run() {
+                updateUserDataDrawer();
+                tryActivateLocation();
+            }
+        });
 
     }
 
@@ -282,9 +309,6 @@ public class DrawerActivity extends AppCompatActivity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.drawer, menu);
 
-        //Lo de update este deberia ir en otra parte pero bueno funca si esta aqui
-        updateUserDataDrawer();
-
         return true;
     }
 
@@ -321,20 +345,28 @@ public class DrawerActivity extends AppCompatActivity {
         showStopLocation();
     }
 
-    private void showStopLocation(){
+    private void showLocation(@DrawableRes int iconDraw, String text){
         Toolbar toolbar = findViewById(R.id.toolbar);
-        MenuItem ubi_serv = toolbar.getMenu().findItem(R.id.change_ubi_serv);
-        if(ubi_serv!=null)
-            ubi_serv.setIcon(getDrawable(R.drawable.baseline_location_off_black_18dp));
-        Toast.makeText(getApplicationContext(), "Has dejado de compartir tu ubicacion", Toast.LENGTH_LONG).show();
+        toolbar.post(new Runnable() {
+            @Override
+            public void run() {
+                MenuItem ubi_serv = toolbar.getMenu().findItem(R.id.change_ubi_serv);
+                if(ubi_serv!=null) {
+                    ubi_serv.setIcon(getDrawable(iconDraw));
+                }else{
+                    Log.d(TAG, "Error, ubi_serv es null");
+                }
+                Toast.makeText(getApplicationContext(), text, Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private void showStopLocation(){
+        showLocation(R.drawable.baseline_location_off_black_18dp, "Has dejado de compartir tu ubicacion");
     }
 
     private void showStartLocation(){
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        MenuItem ubi_serv = toolbar.getMenu().findItem(R.id.change_ubi_serv);
-        if(ubi_serv!=null)
-            ubi_serv.setIcon(getDrawable(R.drawable.baseline_location_on_black_18dp));
-        Toast.makeText(getApplicationContext(), "Has empezado a compartir tu ubicacion", Toast.LENGTH_LONG).show();
+        showLocation(R.drawable.baseline_location_on_black_18dp, "Has empezado a compartir tu ubicacion");
     }
 
     public void exit(){
