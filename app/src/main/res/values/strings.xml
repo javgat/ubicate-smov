@@ -39,8 +39,6 @@
     <string name="button_join_domain">Unirse</string>
     <string name="placeholder_create_domain">Nombre de organización</string>
     <string name="button_create_domain">Crear</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="prompt_name">Nombre de usuario</string>
     <string name="invalid_email">Email no valido</string>
     <string name="invalid_password2">Las contraseñas no coinciden</string>
