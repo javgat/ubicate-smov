@@ -1,4 +1,4 @@
-package es.uva.ubicate.ui.chat.search;
+package es.uva.ubicate.ui.search;
 import android.app.SearchManager;
 import android.content.AsyncQueryHandler;
 import android.content.Intent;

@@ -1,11 +1,9 @@
-package es.uva.ubicate.ui.chat.search;
+package es.uva.ubicate.ui.search;
 import android.app.SearchManager;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.widget.SearchView;
 import android.widget.Toast;
 
@@ -13,7 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import es.uva.ubicate.R;
 
-public class MainActivity extends AppCompatActivity
+public class SearchActivity extends AppCompatActivity
         implements SearchView.OnQueryTextListener {
 
 
@@ -21,7 +19,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_search);
     }
 
     @Override
