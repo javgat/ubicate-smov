@@ -71,5 +71,6 @@
     <string name="banner_ad_unit_id">ca-app-pub-3940256099942544/6300978111</string>
     <string name="prompt_write_message">Escribe tu mensaje</string>
     <string name="chat_no_org">El chat solo está disponible si tienes organización</string>
+    <string name="register_failed">Error al registrarse. El correo ya está registrado o no es válido.</string>
 
 </resources>
