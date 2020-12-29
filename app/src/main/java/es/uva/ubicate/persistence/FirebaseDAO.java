@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -16,6 +17,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -122,6 +124,12 @@ public class FirebaseDAO {
         mEmpresa.child("eventos").child(key).setValue(evento);
     }
 
+    public static Task<Uri> existsImage(FirebaseStorage storage, String url){
+        StorageReference storageRef = storage.getReference();
+        StorageReference pathReference = storageRef.child(url);
+        return pathReference.getDownloadUrl();
+    }
+
     public static void downloadImage(ImageView imageView, FirebaseStorage storage, String url, String TAG){
         StorageReference storageRef = storage.getReference();
         StorageReference pathReference = storageRef.child(url);
@@ -198,5 +206,9 @@ public class FirebaseDAO {
                 }
             }
         });
+    }
+
+    public static Task<Void> borrarImagen(StorageReference imageRef) {
+        return imageRef.delete();
     }
 }

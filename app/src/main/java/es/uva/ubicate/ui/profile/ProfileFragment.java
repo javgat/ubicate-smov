@@ -66,12 +66,66 @@ public class ProfileFragment extends Fragment {
     private static final int REQ_STORAGE = 200;
     private View raiz;
 
+    private void tryBorrarImage(StorageReference imageRef){
+
+        final ProgressBar loadingProgressBar =  raiz.findViewById(R.id.loading_profile);
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setMessage(R.string.dialog_delete_image)
+                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        loadingProgressBar.setVisibility(View.VISIBLE);
+                        FirebaseDAO.borrarImagen(imageRef).addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                if(task.isSuccessful()) {
+                                    Toast.makeText(getContext(), R.string.image_uploaded, Toast.LENGTH_LONG).show();
+                                    updateUserDataDrawer();
+                                    updateValuesUI(raiz);
+                                }
+                                loadingProgressBar.setVisibility(View.GONE);
+                            }
+                        });
+                    }
+                })
+                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // User cancelled the dialog
+                    }
+                });
+        // Create the AlertDialog object and return it
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
+    }
+
     private void updateValuesUI(View root){
         final TextView textName = root.findViewById(R.id.text_name);
         final TextView textEmail = root.findViewById(R.id.text_email);
         final FirebaseUser cUser = FirebaseAuth.getInstance().getCurrentUser();
         textName.setText(cUser.getDisplayName());
         textEmail.setText(cUser.getEmail());
+
+        final Button borrar_image = root.findViewById(R.id.boton_borrar_imagen);
+        borrar_image.setVisibility(View.GONE);
+
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference storageRef = storage.getReference();
+        StorageReference imagesRef = storageRef.child("images");
+        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        StorageReference profilePicture = imagesRef.child(uid+".jpg");
+        final long ONE_MEGABYTE = 1024 * 1024;
+        profilePicture.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(Uri uri) {
+                borrar_image.setVisibility(View.VISIBLE);
+                borrar_image.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        tryBorrarImage(profilePicture);
+                    }
+                });
+            }
+        });
     }
 
     private void updateUserDataDrawer(){
