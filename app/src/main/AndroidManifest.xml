@@ -50,6 +50,10 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
 
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-7505110720181161~8299248531"/>
+
         <activity android:name=".ui.search.SearchableActivity">
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
@@ -62,11 +66,19 @@
         <activity
             android:name=".DrawerActivity"
             android:label="@string/title_activity_drawer"
-            android:theme="@style/Theme.Ubicate.NoActionBar" />
+            android:theme="@style/Theme.Ubicate.NoActionBar"/>
+
+
         <activity
             android:name=".SplashActivity"
             android:theme="@style/SplashTheme"
+            android:label="@string/app_name"/>
+
+        <activity
+            android:name=".ui.login.LoginActivity"
+            android:theme="@style/Theme.Ubicate"
             android:label="@string/app_name">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

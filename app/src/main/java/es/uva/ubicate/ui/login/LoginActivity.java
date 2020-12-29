@@ -56,6 +56,7 @@ public class LoginActivity extends AppCompatActivity {
             finActivity();
         }
         setContentView(R.layout.activity_login);
+        /*
         MobileAds.initialize(this, new OnInitializationCompleteListener() {
             @Override
             public void onInitializationComplete(InitializationStatus initializationStatus) {
@@ -64,6 +65,7 @@ public class LoginActivity extends AppCompatActivity {
         mAdView = findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
+        */
         loginViewModel = new ViewModelProvider(this, new LoginViewModelFactory())
                 .get(LoginViewModel.class);
 
