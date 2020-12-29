@@ -103,8 +103,23 @@ public class AdminDomainFragment extends Fragment {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
                             long cantMember = snapshot.getChildrenCount();
-                            if(cantMember==1){
-                                FirebaseDAO.deleteDomain(idEmpresa);
+                            if(cantMember==0){
+                                mDatabase.child("empresa").child(idEmpresa).child("join_empresa").addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                        if (snapshot.exists()) {//Con codigo
+                                            String codigo = snapshot.getValue(String.class);
+                                            FirebaseDAO.borrarCodigo(idEmpresa, codigo);
+                                        }
+                                        FirebaseDAO.deleteDomain(idEmpresa);
+                                        reloadDomain();
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError error) {
+
+                                    }
+                                });
                             }else {
                                 Iterable<DataSnapshot> datas = snapshot.getChildren();
                                 boolean hayAdmin = false;
@@ -116,8 +131,8 @@ public class AdminDomainFragment extends Fragment {
                                 if(!hayAdmin){
                                     FirebaseDAO.setAdmin(idEmpresa, id);
                                 }
+                                reloadDomain();
                             }
-                            reloadDomain();
                         }
 
                         @Override

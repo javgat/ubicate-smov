@@ -39,8 +39,6 @@
     <string name="button_join_domain">Unirse</string>
     <string name="placeholder_create_domain">Nombre de organización</string>
     <string name="button_create_domain">Crear</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="prompt_name">Nombre de usuario</string>
     <string name="invalid_email">Email no valido</string>
     <string name="invalid_password2">Las contraseñas no coinciden</string>
@@ -71,5 +69,6 @@
     <string name="banner_ad_unit_id">ca-app-pub-3940256099942544/6300978111</string>
     <string name="prompt_write_message">Escribe tu mensaje</string>
     <string name="chat_no_org">El chat solo está disponible si tienes organización</string>
+    <string name="register_failed">Error al registrarse. El correo ya está registrado o no es válido.</string>
 
 </resources>
