@@ -14,7 +14,7 @@
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
     -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -23,7 +23,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Ubicate">
-        <activity android:name=".ui.login.RegisterActivity"></activity>
+
+
+        <activity android:name=".ui.login.RegisterActivity" />
 
         <service
             android:name=".UpdateLocationService"
@@ -32,8 +34,8 @@
             android:foregroundServiceType="location" />
 
         <provider
-            android:name=".ui.chat.search.UserSuggestionProvider"
-            android:authorities="es.uva.ubicate.ui.chat.search.UserSuggestionProvider"
+            android:name=".ui.search.UserSuggestionProvider"
+            android:authorities="es.uva.ubicate.ui.search.UserSuggestionProvider"
             android:enabled="true"
             android:exported="true" />
         <!--
@@ -48,7 +50,7 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
 
-        <activity android:name=".ui.chat.search.SearchableActivity">
+        <activity android:name=".ui.search.SearchableActivity">
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
             </intent-filter>
@@ -62,7 +64,8 @@
             android:label="@string/title_activity_drawer"
             android:theme="@style/Theme.Ubicate.NoActionBar" />
         <activity
-            android:name=".ui.login.LoginActivity"
+            android:name=".SplashActivity"
+            android:theme="@style/SplashTheme"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -70,9 +73,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".ui.chat.search.MainActivity"
-            android:launchMode="singleTop"></activity>
     </application>
 
 </manifest>
