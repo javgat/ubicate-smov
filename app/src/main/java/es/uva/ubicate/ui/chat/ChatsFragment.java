@@ -52,7 +52,7 @@ public class ChatsFragment extends Fragment {
 
     private View createMensajeView(Mensaje mensaje, String uid){
         View mensajeView;
-        if(uid.equals(mensaje.getIdAutor())) {
+        if(!uid.equals(mensaje.getIdAutor())) {
             mensajeView = getLayoutInflater().inflate(R.layout.mensaje, null);
             TextView autor = mensajeView.findViewById(R.id.autor_mensaje);
             DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
