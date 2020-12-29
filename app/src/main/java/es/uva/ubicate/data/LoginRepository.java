@@ -1,5 +1,9 @@
 package es.uva.ubicate.data;
 
+import android.content.Context;
+
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+
 import es.uva.ubicate.data.model.LoggedInUser;
 
 /**
@@ -46,6 +50,23 @@ public class LoginRepository {
     public Result<LoggedInUser> login(String username, String password) {
         // handle login
         Result<LoggedInUser> result = dataSource.login(username, password);
+        if (result instanceof Result.Success) {
+            setLoggedInUser(((Result.Success<LoggedInUser>) result).getData());
+        }
+        return result;
+    }
+
+    public Result<LoggedInUser> loginGoogle(GoogleSignInAccount account) {
+        // handle login
+        Result<LoggedInUser> result = dataSource.loginGoogle(account);
+        if (result instanceof Result.Success) {
+            setLoggedInUser(((Result.Success<LoggedInUser>) result).getData());
+        }
+        return result;
+    }
+
+    public Result<LoggedInUser> register(String name, String email, String password){
+        Result<LoggedInUser> result = dataSource.register(name, email, password);
         if (result instanceof Result.Success) {
             setLoggedInUser(((Result.Success<LoggedInUser>) result).getData());
         }

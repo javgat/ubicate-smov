@@ -46,10 +46,6 @@ import es.uva.ubicate.persistence.FirebaseDAO;
 /**
  * An {@link IntentService} subclass for handling asynchronous task requests in
  * a service on a separate handler thread.
- * <p>
- * <p>
- * TODO: Customize class - update intent actions, extra parameters and static
- * helper methods.
  */
 public class UpdateLocationService extends Service {
 
@@ -98,7 +94,7 @@ public class UpdateLocationService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        String input = intent.getStringExtra("inputExtra");
+        String input = "Estás compartiendo tu ubicación con tus compañeros";//intent.getStringExtra("inputExtra");
         locationRequest = intent.getParcelableExtra("locationRequest");
         createNotificationChannel();
         Intent notificationIntent = new Intent(this, DrawerActivity.class);
@@ -107,7 +103,7 @@ public class UpdateLocationService extends Service {
         Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setContentTitle("Compartiendo ubicación")
                 .setContentText(input)
-                //.setSmallIcon(R.drawable.ic_stat_name)
+                .setSmallIcon(R.drawable.logo_app)
                 .setContentIntent(pendingIntent)
                 .build();
         startForeground(1, notification);
@@ -132,6 +128,8 @@ public class UpdateLocationService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        FusedLocationProviderClient fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+        fusedLocationProviderClient.removeLocationUpdates(locationCallback);
         Log.d( TAG, "onDestroyed" );
     }
 

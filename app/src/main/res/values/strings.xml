@@ -23,7 +23,7 @@
     <string name="pr_password_title">Contraseña</string>
     <string name="pr_email_title">Email</string>
     <string name="pr_name_title">Nombre</string>
-    <string name="pr_update">Actualizar</string>
+    <string name="pr_update_pass">Cambiar contraseña</string>
     <string name="invalid_name">El nombre no puede estar vacío</string>
     <string name="updated_success">Perfil actualizado con éxito</string>
     <string name="updated_failure">Fallo al actualizar el perfil</string>
@@ -31,7 +31,7 @@
     <string name="dialog_logout">¿Cerrar sesión?</string>
     <string name="ok">OK</string>
     <string name="cancel">Cancelar</string>
-    <string name="menu_chat">Chats</string>
+    <string name="menu_chat">Chat</string>
     <string name="menu_domain">Organización</string>
     <string name="text_join_domain">Unirse a una organización</string>
     <string name="text_create_domain">Crea una organización</string>
@@ -39,4 +39,37 @@
     <string name="button_join_domain">Unirse</string>
     <string name="placeholder_create_domain">Nombre de organización</string>
     <string name="button_create_domain">Crear</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="prompt_name">Nombre de usuario</string>
+    <string name="invalid_email">Email no valido</string>
+    <string name="invalid_password2">Las contraseñas no coinciden</string>
+    <string name="dialog_edit_name">Introduce el nuevo nombre de usuario</string>
+    <string name="nombre_cambiado">Nombre cambiado con exito</string>
+    <string name="email_cambiado">Email cambiado con exito</string>
+    <string name="dialog_edit_email">Introduce tu nuevo email</string>
+    <string name="dialog_edit_password">Introduce tu nueva contraseña</string>
+    <string name="pass_cambiado">Contraseña actualizada</string>
+    <string name="auth_failed">Imposible autenticar</string>
+    <string name="image_fail">Fallo al subir la imagen</string>
+    <string name="image_uploaded">Imagen actualizada correctamente</string>
+    <string name="dialog_exit_domain">¿Quiere abandonar la organización?</string>
+    <string name="dialog_exit_domain_admin">¿Quiere salir de la empresa? Si no hay más miembros se eliminará, si sí hay se hará un administrador al azar si no existe otro.</string>
+    <string name="delete_code_domain">Borrar\nCodigo</string>
+    <string name="dialog_input_code_domain">Introduzca el nuevo código de unión a la organización</string>
+    <string name="join_code_exists">El codigo de unión ya está siendo utilizado</string>
+    <string name="dialog_change_domain_name">Introduzca el nuevo nombre de la empresa</string>
+    <string name="almacenamiento_no_activa">No se puede acceder al almacenamiento si no concedes autorización</string>
+    <string name="location_no_allowed">No se podrá compartir la ubicación si no se permite el acceso a ella</string>
+    <string name="dialog_rationale_location">Queremos usar la ubicación para compartirla con tus compañeros de organización.\nPara ello necesitamos que permitas el acceso de la app a la ubicación.\nPuedes desactivar el servicio en cualquier momento desde la app en el icono de ubicación de la barra superior, o desactivando tu ubicación.</string>
+    <string name="text_home_no_domain">Necesitas unirte a una organización para tener Eventos</string>
+    <string name="add_event">Crear evento</string>
+    <string name="dialog_new_event">Introduce los datos del nuevo evento</string>
+    <string name="next">Siguiente</string>
+    <string name="dialog_delete_image">¿Desea borrar la imagen de perfil?</string>
+    <!--<string name="banner_ad_unit_id">ca-app-pub-7505110720181161/3682374345</string>-->
+    <string name="banner_ad_unit_id">ca-app-pub-3940256099942544/6300978111</string>
+    <string name="prompt_write_message">Escribe tu mensaje</string>
+    <string name="chat_no_org">El chat solo está disponible si tienes organización</string>
+
 </resources>

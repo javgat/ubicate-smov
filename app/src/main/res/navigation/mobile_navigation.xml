@@ -33,4 +33,13 @@
         android:name="es.uva.ubicate.ui.profile.ProfileFragment"
         android:label="@string/menu_profile"
         tools:layout="@layout/fragment_profile" />
+
+
+    <fragment
+        android:id="@+id/nav_logout"
+        android:label="@string/menu_logout"
+        android:name="es.uva.ubicate.ui.logout.LogoutFragment"
+        tools:layout="@layout/fragment_logout" />
+
+
 </navigation>

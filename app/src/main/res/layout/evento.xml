@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:background="@drawable/border"
+    android:padding="7dp">
+    <TextView
+        android:id="@+id/title_event"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="Titulo"
+        android:gravity="center"
+        android:textAlignment="center"
+        android:textSize="26dp" />
+    <TextView
+        android:id="@+id/description_event"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="Descripción"
+        android:textAlignment="center"
+        android:gravity="center"
+        android:textSize="18dp" />
+
+    <TextView
+        android:id="@+id/date_event"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="Fecha"
+        android:textAlignment="center"
+        android:gravity="center"
+        android:textSize="18dp" />
+    <Button
+        android:id="@+id/boton_borrar_evento"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@android:color/holo_red_dark"
+        app:strokeColor="#FFFFFF"
+        android:text="Borrar"
+        android:visibility="gone"/>
+</LinearLayout>
