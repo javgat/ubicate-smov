@@ -55,29 +55,7 @@ public class AdminDomainFragment extends Fragment {
 
         ImageView imageView = memberView.findViewById(R.id.image_member);
         FirebaseStorage storage = FirebaseStorage.getInstance();
-        StorageReference storageRef = storage.getReference();
-        Log.d(TAG, url);
-        StorageReference pathReference = storageRef.child(url);
-        final long ONE_MEGABYTE = 1024 * 1024;
-        pathReference.getBytes(5*ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
-            @Override
-            public void onSuccess(byte[] bytes) {
-                Log.d(TAG, "Si tiene imagen de perfil");
-                Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                int width = bitmap.getWidth();
-                int height = bitmap.getHeight();
-                if(width<height)
-                    height=width;
-                //int crop = (width - height) / 2;
-                Bitmap cropImg = Bitmap.createBitmap(bitmap, 0, 0, height, height);
-                imageView.setImageBitmap(cropImg);
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-                Log.d(TAG, "No tiene imagen de perfil");
-            }
-        });
+        FirebaseDAO.downloadImage(imageView, storage, url, TAG);
 
         Button button_admin = memberView.findViewById(R.id.button_admin_member);
         Button button_expulsar = memberView.findViewById(R.id.button_delete_member);
