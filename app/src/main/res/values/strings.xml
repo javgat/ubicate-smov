@@ -67,4 +67,5 @@
     <string name="dialog_new_event">Introduce los datos del nuevo evento</string>
     <string name="next">Siguiente</string>
     <string name="dialog_delete_image">¿Desea borrar la imagen de perfil?</string>
+    <string name="banner_ad_unit_id">ca-app-pub-3940256099942544/6300978111</string>
 </resources>
