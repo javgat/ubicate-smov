@@ -306,9 +306,6 @@ public class DrawerActivity extends AppCompatActivity {
                     stopLocationService();
                 }
                 return true;
-            case R.id.action_settings:
-                //startActivity(new Intent(this, SettingsActivity.class));
-                return true;
             default:
                 Log.d(TAG, "Otra cosa");
                 return false;
