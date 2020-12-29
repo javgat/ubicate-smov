@@ -24,9 +24,6 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Ubicate">
 
-
-        <activity android:name=".ui.login.RegisterActivity" />
-
         <service
             android:name=".UpdateLocationService"
             android:enabled="true"
@@ -63,11 +60,12 @@
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
         </activity>
+
         <activity
             android:name=".DrawerActivity"
             android:label="@string/title_activity_drawer"
             android:theme="@style/Theme.Ubicate.NoActionBar"/>
-
+        <activity android:name=".ui.login.RegisterActivity" />
         <activity
             android:name=".ui.login.LoginActivity"
             android:theme="@style/Theme.Ubicate"
@@ -79,6 +77,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
     </application>
 
 </manifest>

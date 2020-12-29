@@ -34,6 +34,7 @@ import java.util.Date;
 
 import es.uva.ubicate.R;
 import es.uva.ubicate.data.model.Evento;
+import es.uva.ubicate.data.model.Mensaje;
 
 public class FirebaseDAO {
     public static void setLocation(String uid, LatLng locUser, Date fecha){
@@ -210,5 +211,10 @@ public class FirebaseDAO {
 
     public static Task<Void> borrarImagen(StorageReference imageRef) {
         return imageRef.delete();
+    }
+
+    public static void sendMensaje(String idEmpresa, Mensaje mensaje, DatabaseReference mDatabase) {
+        String key = mDatabase.child("empresa").child(idEmpresa).child("mensajes").push().getKey();
+        mDatabase.child("empresa").child(idEmpresa).child("mensajes").child(key).setValue(mensaje);
     }
 }

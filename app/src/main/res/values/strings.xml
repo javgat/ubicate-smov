@@ -31,7 +31,7 @@
     <string name="dialog_logout">¿Cerrar sesión?</string>
     <string name="ok">OK</string>
     <string name="cancel">Cancelar</string>
-    <string name="menu_chat">Chats</string>
+    <string name="menu_chat">Chat</string>
     <string name="menu_domain">Organización</string>
     <string name="text_join_domain">Unirse a una organización</string>
     <string name="text_create_domain">Crea una organización</string>
@@ -69,5 +69,7 @@
     <string name="dialog_delete_image">¿Desea borrar la imagen de perfil?</string>
     <!--<string name="banner_ad_unit_id">ca-app-pub-7505110720181161/3682374345</string>-->
     <string name="banner_ad_unit_id">ca-app-pub-3940256099942544/6300978111</string>
+    <string name="prompt_write_message">Escribe tu mensaje</string>
+    <string name="chat_no_org">El chat solo está disponible si tienes organización</string>
 
 </resources>

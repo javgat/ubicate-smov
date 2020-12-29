@@ -1,4 +1,4 @@
-package es.uva.ubicate.ui.domain;
+package es.uva.ubicate.ui.home;
 
 import android.app.DatePickerDialog;
 import android.app.Dialog;
