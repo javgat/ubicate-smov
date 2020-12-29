@@ -26,6 +26,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageException;
 import com.google.firebase.storage.StorageReference;
 
+import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -37,7 +38,7 @@ public class FirebaseDAO {
         DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
         mDatabase.child("usuario").child(uid).child("latitude").setValue(locUser.latitude);
         mDatabase.child("usuario").child(uid).child("longitude").setValue(locUser.longitude);
-        mDatabase.child("usuario").child(uid).child("date").setValue(fecha.toString());
+        mDatabase.child("usuario").child(uid).child("date").setValue(DateFormat.getDateTimeInstance().format(fecha));
     }
 
     public static void setName(String uid, String name) {
