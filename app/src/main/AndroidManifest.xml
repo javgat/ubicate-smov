@@ -30,11 +30,6 @@
             android:exported="true"
             android:foregroundServiceType="location" />
 
-        <provider
-            android:name=".ui.search.UserSuggestionProvider"
-            android:authorities="es.uva.ubicate.ui.search.UserSuggestionProvider"
-            android:enabled="true"
-            android:exported="true" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -50,16 +45,6 @@
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-7505110720181161~8299248531"/>
-
-        <activity android:name=".ui.search.SearchableActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.SEARCH" />
-            </intent-filter>
-
-            <meta-data
-                android:name="android.app.searchable"
-                android:resource="@xml/searchable" />
-        </activity>
 
         <activity
             android:name=".DrawerActivity"
