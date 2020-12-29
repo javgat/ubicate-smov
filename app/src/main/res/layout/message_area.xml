@@ -13,11 +13,10 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:textColorHint="#CFD8DC"
             android:gravity="center"
             android:background="@android:color/transparent"
             android:hint="Escribe un mensaje..."
-            android:id="@+id/messageArea"
+            android:id="@+id/input_mensaje"
             android:maxHeight="80dp"
             />
         <ImageView
