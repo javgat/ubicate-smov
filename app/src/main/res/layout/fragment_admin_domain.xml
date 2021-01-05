@@ -21,15 +21,15 @@
 
     <ScrollView
         android:id="@+id/scrollView2"
-        android:layout_width="410dp"
-        android:layout_height="581dp"
-        android:layout_marginTop="48dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="96dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.6"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/domain_member_title"
-        app:layout_constraintVertical_bias="0.925">
+        app:layout_constraintTop_toBottomOf="@+id/button_code_admin"
+        app:layout_constraintVertical_bias="0">
 
         <LinearLayout
             android:id="@+id/linear_scroll_member_domain"
@@ -57,7 +57,7 @@
         android:layout_marginTop="16dp"
         android:text=""
         android:visibility="gone"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/button_code_admin"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/domain_member_title" />
@@ -68,12 +68,10 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:text="Crear\ncódigo"
-        app:layout_constraintBottom_toTopOf="@+id/scrollView2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/domain_member_title"
-        app:layout_constraintVertical_bias="0.833" />
+        app:layout_constraintTop_toBottomOf="@+id/domain_member_title" />
 
     <ImageView
         android:id="@+id/image_edit_name_domain"
